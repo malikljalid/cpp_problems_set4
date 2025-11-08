@@ -41,13 +41,13 @@ void printHunderedPart(std::string s)
         std::cout << a[digit(s[2]) - 1] << " ";
 }
 
-void function(int x, int i)
+void printNumberInLetters(int x, int i)
 {
     int rest = x % 1000;
     int div  = x / 1000;
 
     if (div != 0)
-        function(div, i + 1);
+        printNumberInLetters(div, i + 1);
 
     std::string hunderedPart = stringFormatOf(rest);
     
@@ -59,7 +59,7 @@ void function(int x, int i)
 
 int main(void)
 {
-    function(100613, 0);
+    printNumberInLetters(100613, 0);
 
     return (0);
 }
