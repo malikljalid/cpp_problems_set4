@@ -86,7 +86,7 @@ void showCalendar(short int Month, short int Year)
 
 int main(void)
 {
-    showCalendar(9, 2022);
+    showCalendar(readNumber("Month"), readNumber("Year"));
 
     return (0);
 }
