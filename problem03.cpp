@@ -4,7 +4,7 @@ int readNumber(void)
 {
     int Number;
 
-    std::cout << "Please enter a number : ";
+    std::cout << "Please enter a year to check : ";
     std::cin >> Number;
 
     return (Number);
