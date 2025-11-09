@@ -27,7 +27,7 @@ short int zeller_formula(short int Day, short int Month, short int Year)
     if (Month < 3)
     {
         Month += 12;
-        Year  += 1;
+        Year  -= 1;
     }
 
     return ((Day + (int)std::floor(13 * (Month + 1) / (double)5) + last2DigitsOf(Year) + (int)std::floor(last2DigitsOf(Year) / (double)4) + (int)std::floor(first2DigitsOf(Year) / (double)4) + 5 * first2DigitsOf(Year)) % 7);
@@ -86,7 +86,12 @@ void showCalendar(short int Month, short int Year)
 
 int main(void)
 {
-    showCalendar(readNumber("Month"), readNumber("Year"));
+    // showCalendar(readNumber("Month"), readNumber("Year"));
+    // showCalendar(1, 2024);
+    // showCalendar(12, 2024);
+    showCalendar(1, 2025);
+    showCalendar(2, 2025);
+    showCalendar(3, 2025);
 
     return (0);
 }
