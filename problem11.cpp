@@ -56,7 +56,7 @@ stDate getDayMonthYearFromSumOfDaysFromStartOfYear(short Year, short int DaysFro
     stDate      Date;
     short int   Month = 0;
 
-    for (Month = 1; Month <= 12; Month++)
+    for (Month = 1; Month < 12; Month++)
     {
         DaysFromStartOfYear -= getMonthDays(Month, Year);
 
