@@ -20,7 +20,7 @@ short int getMonthDays(short int Month, short int Year)
     short int listOf31DaysMonths[13] = { 0, 1, 0, 3, 0, 5, 0, 7, 8, 0, 10, 0, 12 };
 
     if (Month == 2)
-        return (leapYear(Year) ? 28 : 29);
+        return (leapYear(Year) ? 29 : 28);
     return (listOf31DaysMonths[Month] == 0 ? 30 : 31); 
 }
 
