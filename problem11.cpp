@@ -45,7 +45,7 @@ short int getNumberOfDaysFromStartOf(short int Day, short int Month, short int Y
 {
     short int Days = Day;
 
-    for (short int i = 1; i <= Month; i++)
+    for (short int i = 1; i < Month; i++)
         Days += getMonthDays(i, Year);
 
     return (Days);
