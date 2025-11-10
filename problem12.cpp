@@ -78,13 +78,6 @@ void printNumberOfDaysFromStartOf(short int Day, short int Month, short int Year
     std::cout << "\nNumber of days form the beggining of " << Year << " is : " << getNumberOfDaysFromStartOf(Day, Month, Year) << std::endl;
 }
 
-void printDateFromGivenDaysFromStartOfYear(int Year, int DaysFromStartOfYear)
-{
-    stDate Date = getDayMonthYearFromSumOfDaysFromStartOfYear(Year, DaysFromStartOfYear);
-
-    std::cout << "Date : " << Date.Day << "/" << Date.Month << "/" << Date.Year << "\n";
-}
-
 void printDate(stDate Date)
 {
     std::cout << Date.Day << "/" << Date.Month << "/" << Date.Year << std::endl;
