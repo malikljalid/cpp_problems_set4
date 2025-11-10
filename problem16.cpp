@@ -49,28 +49,6 @@ bool isLastMonth(short int Month)
     return (Month == 12);
 }
 
-stDate getDDMMYYfromDaysFromStartOfYear(short Year, short int DaysFromStartOfYear)
-{
-    stDate      Date;
-    short int   Month = 0;
-
-    for (Month = 1; Month < 12; Month++)
-    {
-        if (DaysFromStartOfYear < getMonthDays(Month, Year))
-            break;
-        DaysFromStartOfYear -= getMonthDays(Month, Year);
-    }
-
-    if (Month == 12 && DaysFromStartOfYear > getMonthDays(12, Year))
-        return (getDDMMYYfromDaysFromStartOfYear(Year + 1, DaysFromStartOfYear - getMonthDays(12, Year)));
-    
-    Date.Day    = DaysFromStartOfYear;
-    Date.Month  = Month;
-    Date.Year   = Year;
-
-    return (Date); 
-}
-
 stDate increaseDateByOneDay(stDate Date)
 {
     if (isLastDayInMonth(Date.Day, Date.Month, Date.Year))
