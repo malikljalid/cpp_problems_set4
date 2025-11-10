@@ -89,7 +89,7 @@ int main(void)
     short int Month = readNumber(" Please enter a Month : ");
     short int Day   = readNumber(" Please enter a Day   : ");
 
-    printDate(getDDMMYYfromDaysFromStartOfYear(Year, readNumber("How many days you want to add ? : ")));
+    printDate(getDDMMYYfromDaysFromStartOfYear(Year, getNumberOfDaysFromStartOf(Day, Month, Year) + readNumber("How many days you want to add ? : ")));
 
     return (0);
 }
