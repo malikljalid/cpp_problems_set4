@@ -1,6 +1,4 @@
 #include <iostream>
-#include <iomanip>
-#include <cmath>
 
 struct stDate
 {
@@ -17,16 +15,6 @@ int readNumber(std::string msg)
     std::cin >> Number;
 
     return (Number);
-}
-
-short int last2DigitsOf(int Number)
-{
-    return (Number % 100);
-}
-
-short int first2DigitsOf(int Number)
-{
-    return (Number / 100);
 }
 
 bool leapYear(short int year)
