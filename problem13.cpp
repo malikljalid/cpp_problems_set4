@@ -28,22 +28,22 @@ int readNumber(std::string msg)
     return (Number);
 }
 
-bool Date1IsLessThanDate2(stDate date1, stDate date2)
+bool Date1IsLatestThanDate2(stDate date1, stDate date2)
 {
-    if (date1.Year > date2.Year)
-        return (true);
-    else if (date1.Month > date2.Month)
-        return (true);
-    else if (date1.Day > date2.Day)
-        return (true);
-
-    return (false);
+    return ((date1.Year > date2.Year) ||
+            (date1.Year == date2.Year && date1.Month > date2.Month) ||
+            (date1.Year == date2.Year && date1.Month == date2.Month && date1.Day > date2.Day));
 }
 
 int main(void)
 {
-    stDate date1 = initDate(readNumber(" Please enter a Day   : "), readNumber(" Please enter a Month : "), readNumber(" Please enter a Year  : "));
-    stDate date2 = initDate(readNumber(" Please enter a Day   : "), readNumber(" Please enter a Month : "), readNumber(" Please enter a Year  : "));
+    stDate date1 = initDate(readNumber(" Please enter Date1 Day   : "), readNumber(" Please enter Date1 Month : "), readNumber(" Please enter Date1 Year  : "));
+    stDate date2 = initDate(readNumber(" Please enter Date2 Day   : "), readNumber(" Please enter Date2 Month : "), readNumber(" Please enter Date2 Year  : "));
+
+    if (Date1IsLatestThanDate2(date1, date2))
+        std::cout << "Yes, Date1 is Latest than Date 2.\n";
+    else
+        std::cout << "No, Date1 is Older than Date 2.\n";
 
     return (0);
 }
