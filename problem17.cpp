@@ -62,13 +62,54 @@ bool Date1IsEqualToDate2(stDate date1, stDate date2)
     return (date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day);
 }
 
+bool isLastDayInMonth(short int Day, short int Month, short int Year)
+{
+    return (Day == getMonthDays(Month, Year));
+}
+
+bool isLastMonth(short int Month)
+{
+    return (Month == 12);
+}
+
+stDate increaseDateByOneDay(stDate Date)
+{
+    if (isLastDayInMonth(Date.Day, Date.Month, Date.Year))
+    {
+        if (isLastMonth(Date.Month))
+        {
+            Date.Year++;
+            Date.Month = 1;
+        }
+        else
+            Date.Month++;
+
+        Date.Day = 1;
+    }
+    else
+        Date.Day++;
+
+    return (Date);
+}
+
 int  differenceBetweenDate1AndDate2(stDate date1, stDate date2)
 {
+    int DaysDifference = 0;
+
     if (Date1IsEqualToDate2(date1, date2))
         return (0);
+
     if (Date1IsLatestThanDate2(date1, date2))
-        return (getNumberOfDaysFromStartOf(date1.Day, date1.Month, date1.Year) - getNumberOfDaysFromStartOf(date2.Day, date2.Month, date2.Year));
-    return (getNumberOfDaysFromStartOf(date2.Day, date2.Month, date2.Year) - getNumberOfDaysFromStartOf(date1.Day, date1.Month, date1.Year));
+    {
+        while (Date1IsEqualToDate2(date1, date2) == false)
+        {
+            date2 = increaseDateByOneDay(date2);
+            DaysDifference++;
+        }
+        return (DaysDifference);
+    }
+
+    return (differenceBetweenDate1AndDate2(date2, date1));
 }
 
 int  differenceBetweenDate1AndDate2(stDate date1, stDate date2, bool includeEndDay)
