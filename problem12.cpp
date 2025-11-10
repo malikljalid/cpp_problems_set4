@@ -1,6 +1,4 @@
 #include <iostream>
-#include <iomanip>
-#include <cmath>
 
 struct stDate
 {
@@ -17,16 +15,6 @@ int readNumber(std::string msg)
     std::cin >> Number;
 
     return (Number);
-}
-
-short int last2DigitsOf(int Number)
-{
-    return (Number % 100);
-}
-
-short int first2DigitsOf(int Number)
-{
-    return (Number / 100);
 }
 
 bool leapYear(short int year)
@@ -71,11 +59,6 @@ stDate getDDMMYYfromDaysFromStartOfYear(short Year, short int DaysFromStartOfYea
     Date.Year   = Year;
 
     return (Date); 
-}
-
-void printNumberOfDaysFromStartOf(short int Day, short int Month, short int Year)
-{
-    std::cout << "\nNumber of days form the beggining of " << Year << " is : " << getNumberOfDaysFromStartOf(Day, Month, Year) << std::endl;
 }
 
 void printDate(stDate Date)
