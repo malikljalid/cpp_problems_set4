@@ -39,6 +39,16 @@ short int getNumberOfDaysFromStartOf(short int Day, short int Month, short int Y
     return (Days);
 }
 
+bool isLastDayInMonth(short int Day, short int Month, short int Year)
+{
+    return (Day == getMonthDays(Month, Year));
+}
+
+bool isLastMonth(short int Month)
+{
+    return (Month == 12);
+}
+
 stDate getDDMMYYfromDaysFromStartOfYear(short Year, short int DaysFromStartOfYear)
 {
     stDate      Date;
@@ -63,7 +73,22 @@ stDate getDDMMYYfromDaysFromStartOfYear(short Year, short int DaysFromStartOfYea
 
 stDate increaseDateByOneDay(stDate Date)
 {
-    return (getDDMMYYfromDaysFromStartOfYear(Date.Year, getNumberOfDaysFromStartOf(Date.Day, Date.Month, Date.Year) + 1));
+    if (isLastDayInMonth(Date.Day, Date.Month, Date.Year))
+    {
+        if (isLastMonth(Date.Month))
+        {
+            Date.Year++;
+            Date.Month = 1;
+        }
+        else
+            Date.Month++;
+
+        Date.Day = 1;
+    }
+    else
+        Date.Day++;
+
+    return (Date);
 }
 
 stDate initDate(short int Day, short int Month, short int Year)
