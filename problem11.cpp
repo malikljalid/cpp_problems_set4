@@ -58,10 +58,9 @@ stDate getDayMonthYearFromSumOfDaysFromStartOfYear(short Year, short int DaysFro
 
     for (Month = 1; Month < 12; Month++)
     {
-        DaysFromStartOfYear -= getMonthDays(Month, Year);
-
-        if (DaysFromStartOfYear < getMonthDays(Month+1, Year))
+        if (DaysFromStartOfYear < getMonthDays(Month, Year))
             break;
+        DaysFromStartOfYear -= getMonthDays(Month, Year);
     }
 
     Date.Day    = DaysFromStartOfYear;
