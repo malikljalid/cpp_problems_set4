@@ -36,6 +36,7 @@ int readNumber(std::string msg)
 stDate decreaseDateByXDecades(stDate Date, short int DecadesToSub)
 {
     Date.Year -= DecadesToSub * 10;
+
     return (Date);
 }
 
