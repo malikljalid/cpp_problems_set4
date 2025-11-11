@@ -100,7 +100,7 @@ int main(void)
 
     printDayOfWeek(Date);
 
-    std::cout << daysUntilEndOfWeek(Date) << " until end of week...\n";
+    std::cout << daysUntilEndOfWeek(Date) << " Days until end of week...\n";
 
     return (0);
 }
