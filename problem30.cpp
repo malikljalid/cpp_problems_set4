@@ -33,38 +33,10 @@ int readNumber(std::string msg)
     return (Number);
 }
 
-bool leapYear(short int year)
-{
-    return ((year % 4 == 0) ? ((year % 100 == 0) ? ((year % 400 == 0) ? true : false ) : true) : false);
-}
-
-short int getMonthDays(short int Month, short int Year)
-{
-    short int listOfDays[13] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-    return ((Month == 2) ? (leapYear(Year) ? 29 : 28) : listOfDays[Month]); 
-}
-
-bool isLastDayInMonth(short int Day, short int Month, short int Year)
-{
-    return (Day == getMonthDays(Month, Year));
-}
-
-bool isLastMonth(short int Month)
-{
-    return (Month == 12);
-}
-
-stDate increaseDateByOneDecade(stDate Date)
-{
-    Date.Year += 10;
-
-    return (Date);
-}
-
 stDate increaseDateByXDecades(stDate Date, short int DecadesToAdd)
 {
     Date.Year += DecadesToAdd * 10;
+
     return (Date);
 }
 
