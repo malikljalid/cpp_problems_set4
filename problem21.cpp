@@ -98,7 +98,7 @@ int main(void)
     stDate Date = initDate(Day, Month, Year);
 
     printDate(Date);
-    printDate(increaseDateByXDays(Date, readNumber("How many days you wanna add ? : ")));
+    printDate(increaseDateByOneWeek(Date, readNumber("How many days you wanna add ? : ")));
 
     return (0);
 }
