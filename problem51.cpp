@@ -165,7 +165,7 @@ int main(void)
 
     printDayOfWeek(Date);
 
-    std::cout << daysUntilEndOfMonth(Date) << " until end of Month...\n";
+    std::cout << daysUntilEndOfMonth(Date) << " Days until end of Month...\n";
 
     return (0);
 }
