@@ -90,7 +90,7 @@ int main(void)
     stDate Date = initDate(Day, Month, Year);
 
     printDate(Date);
-    printDate(increaseDateByOneMonth(Date));
+    printDate(increaseDateByXMonths(Date, readNumber("How many Months you wanna add ? : ")));
 
     return (0);
 }
