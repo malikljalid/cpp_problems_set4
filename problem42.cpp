@@ -35,7 +35,7 @@ int readNumber(std::string msg)
 
 stDate decreaseDateByOneDecade(stDate Date)
 {
-    Date.Year -= 100;
+    Date.Year -= 10;
 
     return (Date);
 }
