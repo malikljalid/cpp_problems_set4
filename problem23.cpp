@@ -78,7 +78,6 @@ int main(void)
     short int Month = readNumber(" Please enter a Month : ");
     short int Day   = readNumber(" Please enter a Day   : ");
 
-
     stDate Date = initDate(Day, Month, Year);
 
     printDate(Date);
