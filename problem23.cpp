@@ -55,34 +55,6 @@ bool isLastMonth(short int Month)
     return (Month == 12);
 }
 
-stDate increaseDateByOneDay(stDate Date)
-{
-    if (isLastDayInMonth(Date.Day, Date.Month, Date.Year))
-    {
-        if (isLastMonth(Date.Month))
-        {
-            Date.Year++;
-            Date.Month = 1;
-        }
-        else
-            Date.Month++;
-
-        Date.Day = 1;
-    }
-    else
-        Date.Day++;
-
-    return (Date);
-}
-
-stDate increaseDateByXDays(stDate Date, short int DaysToAdd)
-{
-    while (DaysToAdd--)
-        Date = increaseDateByOneDay(Date);
-    
-    return (Date);
-}
-
 stDate increaseDateByOneMonth(stDate Date)
 {
     if (isLastMonth(Date.Month))
