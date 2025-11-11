@@ -29,16 +29,6 @@ short int getMonthDays(short int Month, short int Year)
     return ((Month == 2) ? (leapYear(Year) ? 29 : 28) : listOfDays[Month]); 
 }
 
-short int getNumberOfDaysFromStartOf(short int Day, short int Month, short int Year)
-{
-    short int Days = Day;
-
-    for (short int i = 1; i < Month; i++)
-        Days += getMonthDays(i, Year);
-
-    return (Days);
-}
-
 bool isLastDayInMonth(short int Day, short int Month, short int Year)
 {
     return (Day == getMonthDays(Month, Year));
