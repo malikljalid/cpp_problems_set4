@@ -80,7 +80,8 @@ int main(void)
     stDate Date = initDate(Day, Month, Year);
 
     printDate(Date);
-    printDate(increaseDateByOneYear(Date));
+    printDate(increaseDateByXYears(Date, readNumber("How many Years you wanna add ? : ")));
+
 
     return (0);
 }
