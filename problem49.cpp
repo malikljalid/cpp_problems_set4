@@ -93,9 +93,9 @@ int main(void)
     printDayOfWeek(Date);
 
     if (isWeekend(Date))
-        std::cout << "it's WEEKEND!\n";
+        std::cout << "it's a Business Day!\n";
     else
-        std::cout << "it's NOT weekend.\n";
+        std::cout << "it's NOT a business day.\n";
 
     return (0);
 }
