@@ -160,7 +160,6 @@ int main(void)
     stDate VacationDate1;
     stDate VacationDate2;
 
-    std::cout << "Vacation Start : \n";
     VacationDate1 = initDate(readNumber("day"), readNumber("month"), readNumber("year"));
 
     printDayOfWeek(VacationDate1, "Vacation Start: ");
