@@ -140,22 +140,11 @@ stPeriod initPeriod(void)
     return (Period);
 }
 
-bool dateIsWithinPeriod(stPeriod Period, stDate Date)
-{
-    short int DateVsPeriodStartDate = compareTwoDates(Date, Period.StartDate);
-    short int DateVsPeriodEndDate   = compareTwoDates(Date, Period.EndDate);
-
-    return (!(DateVsPeriodStartDate == OLDER || DateVsPeriodEndDate == LATEST));
-}
-
 int main(void)
 {
     stPeriod period1 = initPeriod();
 
-    if (dateIsWithinPeriod(period1, initDate(readNumber("Enter Day : "), readNumber("Enter Month : "), readNumber("Enter Year : "))))
-        std::cout << "Day is WITHIN period!\n";
-    else
-        std::cout << "Day is NOT within period!\n";
+    std::cout << "Period Duration : " << period1.DurationDays << " Day(s).\n";
 
     return (0);
 }
