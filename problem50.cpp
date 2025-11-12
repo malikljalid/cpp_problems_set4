@@ -77,11 +77,6 @@ short int dayOfWeek(stDate Date)
     return (6);
 }
 
-bool isEndOfWeek(stDate Date)
-{
-    return (zeller_formula(Date) == SAT);
-}
-
 short int daysUntilEndOfWeek(stDate Date)
 {
     return (ENDOFWEEK - dayOfWeek(Date));
