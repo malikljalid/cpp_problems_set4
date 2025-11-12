@@ -115,7 +115,7 @@ std::string dateToString(stDate Date)
     return (strDate);
 }
 
-std::string dateInFormat(stDate Date, std::string format)
+std::string dateInFormat(stDate Date, std::string format = "dd/mm/yyyy")
 {
     int i = 0;
 
