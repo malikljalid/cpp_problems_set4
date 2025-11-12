@@ -92,7 +92,7 @@ int main(void)
 
     printDayOfWeek(Date);
 
-    if (isWeekend(Date))
+    if (isBusinessDay(Date))
         std::cout << "it's a Business Day!\n";
     else
         std::cout << "it's NOT a business day.\n";
