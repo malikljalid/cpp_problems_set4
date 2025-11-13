@@ -627,7 +627,7 @@ int main(void)
 {
     stBank Bank = initBank("clients_bankRecords.txt", ":");
 
-    while (1)
+    while (true)
     {
         showMenu();
         Bank.Operation.Basic = readUserOperation();
