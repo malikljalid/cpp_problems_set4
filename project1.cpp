@@ -542,3 +542,31 @@ void showTransactionMenu(void)
     std::cout << "---------------------------------------\n";
 }
 
+void executeUserTransaction(stBank &Menu)
+{
+    switch (Menu.Operation.Transaction)
+    {
+        case (DEPOSITE) :
+        {
+            showMenuOf(DEPOSITE);
+            depositeClient(readAccountNumber(), Menu);
+            break;
+        }
+        case (WITHDRAW) :
+        {
+            showMenuOf(WITHDRAW);
+            withdrawClient(readAccountNumber(), Menu);
+            break;
+        }
+        case (BALANCES) :
+        {
+            printBalancesHeader(Menu.vListVector);
+            break;
+        }
+        case (BACKMENU) :
+            break;
+    }
+
+    if (Menu.Operation.Transaction == DEPOSITE || Menu.Operation.Transaction == WITHDRAW)
+        Menu.vListVector = LoadDataFromFileToVector(Menu.ListFile);
+}
