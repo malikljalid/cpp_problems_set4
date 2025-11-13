@@ -397,13 +397,13 @@ void withdrawClient(const std::string &ClientID, stBank &Menu)
     }
 }
 
-stBank initMenu(const stListFile &fileList)
+stBank initBank(const std::string &fileName, const std::string &delim)
 {
     stBank Menu;
 
-    Menu.ListFile.Name  = fileList.Name;
-    Menu.ListFile.Delim = fileList.Delim;
-    Menu.vListVector    = LoadDataFromFileToVector(fileList);
+    Menu.ListFile.Name  = fileName;
+    Menu.ListFile.Delim = delim;
+    Menu.vListVector    = LoadDataFromFileToVector(Menu.ListFile);
 
     return (Menu);
 }
@@ -623,3 +623,21 @@ void executeUserOperation(stBank &Menu)
         Menu.vListVector = LoadDataFromFileToVector(Menu.ListFile);
 }
 
+int main(void)
+{
+    stBank Bank = initBank("clients_bankRecords.txt", ":");
+
+    while (1)
+    {
+        showMenu();
+        Bank.Operation.Basic = readUserOperation();
+        if (Bank.Operation.Basic == EXIT)
+        {
+            showMenuOf(EXIT);
+            break;
+        }
+        executeUserOperation(Bank);
+    }
+
+    return (0);
+}
