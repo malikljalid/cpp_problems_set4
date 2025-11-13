@@ -248,3 +248,20 @@ std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(std::string fileNam
 
     return (vRecords);
 }
+
+void saveDataFromVectorToFile(std::vector <stBankRecord> &vRecords, std::string fileName, std::string delim)
+{
+    std::fstream file;
+
+    file.open(fileName, std::ios::out);
+
+    if (file.is_open())
+    {
+        for (stBankRecord & i : vRecords)
+        {
+            file << convertBankRecordToLine(i, delim) << std::endl;
+        }
+        file.close();
+    }
+}
+
