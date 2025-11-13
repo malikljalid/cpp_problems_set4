@@ -248,4 +248,3 @@ std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(std::string fileNam
 
     return (vRecords);
 }
-
