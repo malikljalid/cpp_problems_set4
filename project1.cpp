@@ -288,7 +288,7 @@ bool clientExistInList(const stListFile &fileList, const std::string &AccountNum
     return (false);
 }
 
-void addLineToFile(std::string line, const std::string &fileName)
+void addLineToFile(const std::string &line, const std::string &fileName)
 {
     std::fstream file;
 
@@ -301,10 +301,10 @@ void addLineToFile(std::string line, const std::string &fileName)
     }
 }
 
-void addRecordToFile( std::string ClientID, stListFile file)
+void addRecordToFile(const std::string &ClientID, const stListFile &fileList)
 {
         std::cout << "--- Adding a new client ---\n\n";
-        addLineToFile(convertBankRecordToLine(readBankRecord(ClientID), file.Delim), file.Name);
+        addLineToFile(convertBankRecordToLine(readBankRecord(ClientID), fileList.Delim), fileList.Name);
         std::cout << "\nClient Added Successfuly!\n";
 }
 
@@ -350,7 +350,7 @@ void deleteClient(const stListFile &fileList, std::string toDelete)
     }
 }
 
-void findClient(const stListFile fileList, std::string toFindAccountNumber)
+void findClient(const stListFile &fileList, std::string toFindAccountNumber)
 {
     stBankRecord client = getRecordInList(fileList, toFindAccountNumber);
 
@@ -363,11 +363,37 @@ void findClient(const stListFile fileList, std::string toFindAccountNumber)
     }
 }
 
-void addClient(std::string ClientID, stBank &Menu)
+void addClient(const std::string &ClientID, stBank &Menu)
 {
     if (clientExistInList(Menu.ListFile, ClientID))
         std::cout << "Account " << ClientID << " already exist!\n";
     else
         addRecordToFile(ClientID, Menu.ListFile);
+}
+
+void depositeClient(const std::string &ClientID, stBank &Menu)
+{
+    stBankRecord client = getRecordInList(Menu.ListFile, ClientID);
+
+    if (client.Name.empty())
+        std::cout << "Client " << ClientID << " does not exist!\n";
+    else
+    {
+        client.Balance += readDepositeAmount();
+        updateClient(Menu.ListFile, ClientID, client.Balance);
+    }
+}
+
+void withdrawClient(const std::string &ClientID, stBank &Menu)
+{
+    stBankRecord client = getRecordInList(Menu.ListFile, ClientID);
+
+    if (client.Name.empty())
+        std::cout << "Client " << ClientID << " does not exist!\n";
+    else
+    {
+        client.Balance -= readWithdrawAmount(client.Balance);
+        updateClient(Menu.ListFile, ClientID, client.Balance);
+    }
 }
 
