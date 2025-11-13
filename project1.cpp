@@ -397,3 +397,148 @@ void withdrawClient(const std::string &ClientID, stBank &Menu)
     }
 }
 
+stBank initMenu(const stListFile &fileList)
+{
+    stBank Menu;
+
+    Menu.ListFile.Name  = fileList.Name;
+    Menu.ListFile.Delim = fileList.Delim;
+    Menu.vListVector    = LoadDataFromFileToVector(fileList);
+
+    return (Menu);
+}
+
+void printHeader(std::vector <stBankRecord> vClients)
+{
+    std::cout << "\n\t\t\t    Client List(" << vClients.size() << ") Client(s)\n";
+    std::cout << "  ______________________________________________________________________________\n\n";
+    std::cout << " | " << std::setw(15) << std::left << "Account Number";
+    std::cout << " | " << std::setw(9)  << std::left << "Pin Code";
+    std::cout << " | " << std::setw(20) << std::left << "Client Name";
+    std::cout << " | " << std::setw(12) << std::left << "Phone";
+    std::cout << " | " << std::setw(6)  << std::left << "Balance |\n";
+    std::cout << "  ______________________________________________________________________________\n\n";
+
+    for (std::vector <stBankRecord>::iterator  i = vClients.begin(); i != vClients.end(); i++)
+    {
+        std::cout << " | " << std::setw(15) << (*i).AccountNumber;
+        std::cout << " | " << std::setw(9)  << (*i).PinCode;
+        std::cout << " | " << std::setw(20) << (*i).Name;
+        std::cout << " | " << std::setw(12) << (*i).PhoneNumber;
+        std::cout << " | " << std::setw(6)  << (*i).Balance << "  |\n";
+    }
+
+    std::cout << "  ______________________________________________________________________________\n\n";
+}
+
+void printBalancesHeader(std::vector <stBankRecord> vClients)
+{
+    int TotalBalances = 0;
+
+    std::cout << "\n\t\tBalances List(" << vClients.size() << ") Client(s)\n";
+    std::cout << "  __________________________________________________\n\n";
+    std::cout << " | " << std::setw(15) << std::left << "Account Number";
+    std::cout << " | " << std::setw(20) << std::left << "Client Name";
+    std::cout << " | " << std::setw(6)  << std::left << "Balance |\n";
+    std::cout << "  __________________________________________________\n\n";
+
+    for (std::vector <stBankRecord>::iterator  i = vClients.begin(); i != vClients.end(); i++)
+    {
+        std::cout << " | " << std::setw(15) << (*i).AccountNumber;
+        std::cout << " | " << std::setw(20) << (*i).Name;
+        std::cout << " | " << std::setw(6)  << (*i).Balance << "  |\n";
+        
+        TotalBalances += (*i).Balance;
+    }
+
+    std::cout << "  _________________________________________________\n\n";
+    std::cout << " |\t\t\t   Total Balances : "  << std::setw(8) << std::left << TotalBalances << "|\n";
+    std::cout << "  _________________________________________________\n\n";
+
+}
+
+void showMenuOf(enMenuOptions Option)
+{
+    std::cout << "---------------------------------------\n";
+    switch (Option)
+    {
+        case (ADD) :
+        {
+            std::cout << "|\t    Add Client Screen          |\n";
+            break;
+        }
+        case (DELETE) :
+        {
+            std::cout << "|\t    Delete Client Screen       |\n";
+            break;
+        }
+        case (UPDATE) :
+        {
+            std::cout << "|\t    Update Client Screen        |\n";
+            break;
+        }
+        case (FIND) :
+        {
+            std::cout << "|\t    Find Client Screen          |\n";
+            break;
+        }
+        case (EXIT) :
+        {
+            std::cout << "|\t    Program ENDS :)           |\n";
+        }
+        default :
+            break;
+    }
+    std::cout << "---------------------------------------\n";
+}
+
+void showMenuOf(enTransactions Option)
+{
+    std::cout << "---------------------------------------\n";
+    switch (Option)
+    {
+        case (DEPOSITE) :
+        {
+            std::cout << "|\t    Deposite Screen           |\n";
+            break;
+        }
+        case (WITHDRAW) :
+        {
+            std::cout << "|\t    Withdraw Screen           |\n";
+            break;
+        }
+        default :
+            break;
+    }
+    std::cout << "---------------------------------------\n";
+}
+
+void showMenu(void)
+{
+    std::cout << "---------------------------------------\n";
+    std::cout << "|\t    Main Menu Screen          |\n";
+    std::cout << "---------------------------------------\n";
+    std::cout << "\t[1] : Show Clients List\n";
+    std::cout << "\t[2] : Add New Client\n";
+    std::cout << "\t[3] : Delete Client\n";
+    std::cout << "\t[4] : Update Client Info\n";
+    std::cout << "\t[5] : Find Client\n";
+    std::cout << "\t[6] : Transactions\n";
+    std::cout << "\t[7] : Exit\n";
+    std::cout << "---------------------------------------\n";
+    std::cout << "---------------------------------------\n";
+}
+
+void showTransactionMenu(void)
+{
+    std::cout << "---------------------------------------\n";
+    std::cout << "|\tTransactions Menu Screen      |\n";
+    std::cout << "---------------------------------------\n";
+    std::cout << "\t[1] : Deposite \n";
+    std::cout << "\t[2] : Withdraw \n";
+    std::cout << "\t[3] : Total Balances \n";
+    std::cout << "\t[4] : Main Menu \n";
+    std::cout << "---------------------------------------\n";
+    std::cout << "---------------------------------------\n";
+}
+
