@@ -570,3 +570,56 @@ void executeUserTransaction(stBank &Menu)
     if (Menu.Operation.Transaction == DEPOSITE || Menu.Operation.Transaction == WITHDRAW)
         Menu.vListVector = LoadDataFromFileToVector(Menu.ListFile);
 }
+
+void executeUserOperation(stBank &Menu)
+{
+    switch (Menu.Operation.Basic)
+    {
+        case (LIST) :
+        {
+            printHeader(Menu.vListVector);
+            break;
+        }
+        case (ADD)  :
+        {
+            showMenuOf(ADD);
+            addClient(readAccountNumber(), Menu);
+            break;
+        }
+        case (FIND) :
+        {
+            showMenuOf(FIND);
+            findClient(Menu.ListFile, readAccountNumber());
+            break;
+        }
+        case (DELETE) :
+        {
+            showMenuOf(DELETE);
+            deleteClient(Menu.ListFile, readAccountNumber());
+            break;
+        }
+        case (UPDATE) :
+        {
+            showMenuOf(UPDATE);
+            updateClient(Menu.ListFile, readAccountNumber());
+            break;
+        }
+        case (TRANSACTION) :
+        {
+            while (1)
+            {
+                showTransactionMenu();
+                Menu.Operation.Transaction = readUserTransaction();
+                if (Menu.Operation.Transaction == BACKMENU)
+                    break;
+                executeUserTransaction(Menu);
+            }
+        }
+        case (EXIT) :
+            break;
+    }
+
+    if (Menu.Operation.Basic == ADD || Menu.Operation.Basic == DELETE || Menu.Operation.Basic == UPDATE)
+        Menu.vListVector = LoadDataFromFileToVector(Menu.ListFile);
+}
+
