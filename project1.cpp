@@ -199,7 +199,7 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName,
     return (vRecords);
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVector(std::string fileName, std::string delim, std::string ExceptionClientAccountNumber, short int newBalance)
+std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName, const std::string &delim, const std::string &ExceptionClientAccountNumber, short int newBalance)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
@@ -218,6 +218,30 @@ std::vector <stBankRecord> LoadDataFromFileToVector(std::string fileName, std::s
                 BR.Balance = newBalance;
             vRecords.push_back(BR);
 
+        }
+        file.close();
+    }
+
+    return (vRecords);
+}
+
+std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(std::string fileName, std::string delim, std::string ExceptionClientAccountNumber)
+{
+    std::fstream                file;
+    std::vector <stBankRecord>  vRecords;
+    stBankRecord                BR;
+
+    file.open(fileName, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+        {
+            BR = convertLineToBankRecord(Line, delim);
+            if (BR.AccountNumber != ExceptionClientAccountNumber)
+                vRecords.push_back(BR);
         }
         file.close();
     }
