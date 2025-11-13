@@ -122,16 +122,106 @@ void printBankRecord(const stBankRecord &BR)
     std::cout << "Balance : " << BR.Balance << std::endl;
 }
 
-void fillBankRecordInfo(std::string &bankRecordInfo, std::string &line, std::string delim)
+void fillBankRecordInfo(std::string &bankRecordInfo, std::string &line, const std::string &delim)
 {
     int i = line.find(delim);
     bankRecordInfo = line.substr(0, i);
     line.erase(0, i + delim.length());
 }
 
-void fillBankRecordInfo(short int &bankRecordInfo, std::string &line, std::string delim)
+void fillBankRecordInfo(int &bankRecordInfo, std::string &line, const std::string &delim)
 {
     int i = line.find(delim);
     bankRecordInfo = std::stoi(line.substr(0, i));
     line.erase(0, i + delim.length());
 }
+
+stBankRecord convertLineToBankRecord(std::string &line, const std::string &delim = ":")
+{
+    stBankRecord    BR;
+
+    fillBankRecordInfo(BR.Name, line, delim);
+    fillBankRecordInfo(BR.PhoneNumber, line, delim);
+    fillBankRecordInfo(BR.AccountNumber, line, delim);
+    fillBankRecordInfo(BR.PinCode, line, delim);
+    fillBankRecordInfo(BR.Balance, line, delim);
+
+    return (BR);
+}
+
+std::string  convertBankRecordToLine(const stBankRecord &BR, std::string delim = ":")
+{
+    return (BR.Name + delim + BR.PhoneNumber + delim + BR.AccountNumber + delim + std::to_string(BR.PinCode) + delim + std::to_string(BR.Balance));
+}
+
+std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName, const std::string &delim)
+{
+    std::fstream                file;
+    std::vector <stBankRecord>  vRecords;
+
+    file.open(fileName, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+            vRecords.push_back(convertLineToBankRecord(Line, delim));;
+        file.close();
+    }
+
+    return (vRecords);
+}
+
+std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName, const std::string &delim, const std::string &ExceptionClientAccountNumber)
+{
+    std::fstream                file;
+    std::vector <stBankRecord>  vRecords;
+    stBankRecord                BR;
+
+    file.open(fileName, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+        {
+            BR = convertLineToBankRecord(Line, delim);
+            if (BR.AccountNumber == ExceptionClientAccountNumber)
+                BR = readBankRecord(ExceptionClientAccountNumber);
+            vRecords.push_back(BR);
+
+        }
+        file.close();
+    }
+
+    return (vRecords);
+}
+
+std::vector <stBankRecord> LoadDataFromFileToVector(std::string fileName, std::string delim, std::string ExceptionClientAccountNumber, short int newBalance)
+{
+    std::fstream                file;
+    std::vector <stBankRecord>  vRecords;
+    stBankRecord                BR;
+
+    file.open(fileName, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+        {
+            BR = convertLineToBankRecord(Line, delim);
+            if (BR.AccountNumber == ExceptionClientAccountNumber)
+                BR.Balance = newBalance;
+            vRecords.push_back(BR);
+
+        }
+        file.close();
+    }
+
+    return (vRecords);
+}
+
