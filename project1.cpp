@@ -154,32 +154,32 @@ std::string  convertBankRecordToLine(const stBankRecord &BR, std::string delim =
     return (BR.Name + delim + BR.PhoneNumber + delim + BR.AccountNumber + delim + std::to_string(BR.PinCode) + delim + std::to_string(BR.Balance));
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName, const std::string &delim)
+std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile &fileList)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
 
-    file.open(fileName, std::ios::in);
+    file.open(fileList.Name, std::ios::in);
 
     if (file.is_open())
     {
         std::string Line = "";
 
         while (getline(file, Line))
-            vRecords.push_back(convertLineToBankRecord(Line, delim));;
+            vRecords.push_back(convertLineToBankRecord(Line, fileList.Delim));;
         file.close();
     }
 
     return (vRecords);
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName, const std::string &delim, const std::string &ExceptionClientAccountNumber)
+std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile fileList, const std::string &ExceptionClientAccountNumber)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
     stBankRecord                BR;
 
-    file.open(fileName, std::ios::in);
+    file.open(fileList.Name, std::ios::in);
 
     if (file.is_open())
     {
@@ -187,7 +187,7 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName,
 
         while (getline(file, Line))
         {
-            BR = convertLineToBankRecord(Line, delim);
+            BR = convertLineToBankRecord(Line, fileList.Delim);
             if (BR.AccountNumber == ExceptionClientAccountNumber)
                 BR = readBankRecord(ExceptionClientAccountNumber);
             vRecords.push_back(BR);
@@ -199,13 +199,13 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName,
     return (vRecords);
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName, const std::string &delim, const std::string &ExceptionClientAccountNumber, short int newBalance)
+std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile &fileList, const std::string &ExceptionClientAccountNumber, const int &newBalance)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
     stBankRecord                BR;
 
-    file.open(fileName, std::ios::in);
+    file.open(fileList.Name, std::ios::in);
 
     if (file.is_open())
     {
@@ -213,7 +213,7 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName,
 
         while (getline(file, Line))
         {
-            BR = convertLineToBankRecord(Line, delim);
+            BR = convertLineToBankRecord(Line, fileList.Delim);
             if (BR.AccountNumber == ExceptionClientAccountNumber)
                 BR.Balance = newBalance;
             vRecords.push_back(BR);
@@ -225,13 +225,13 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const std::string &fileName,
     return (vRecords);
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(std::string fileName, std::string delim, std::string ExceptionClientAccountNumber)
+std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(const stListFile fileList, const std::string &ExceptionClientAccountNumber)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
     stBankRecord                BR;
 
-    file.open(fileName, std::ios::in);
+    file.open(fileList.Name, std::ios::in);
 
     if (file.is_open())
     {
@@ -239,7 +239,7 @@ std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(std::string fileNam
 
         while (getline(file, Line))
         {
-            BR = convertLineToBankRecord(Line, delim);
+            BR = convertLineToBankRecord(Line, fileList.Delim);
             if (BR.AccountNumber != ExceptionClientAccountNumber)
                 vRecords.push_back(BR);
         }
@@ -249,19 +249,125 @@ std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(std::string fileNam
     return (vRecords);
 }
 
-void saveDataFromVectorToFile(std::vector <stBankRecord> &vRecords, std::string fileName, std::string delim)
+void saveDataFromVectorToFile(std::vector <stBankRecord> &vRecords, const stListFile &fileList)
 {
     std::fstream file;
 
-    file.open(fileName, std::ios::out);
+    file.open(fileList.Name, std::ios::out);
 
     if (file.is_open())
     {
-        for (stBankRecord & i : vRecords)
-        {
-            file << convertBankRecordToLine(i, delim) << std::endl;
-        }
+        for (stBankRecord &i : vRecords)
+            file << convertBankRecordToLine(i, fileList.Delim) << std::endl;
         file.close();
     }
+}
+
+stBankRecord getRecordInList(const stListFile &fileList, const std::string &AccountNumberToFind)
+{
+    std::vector <stBankRecord>  vRecords = LoadDataFromFileToVector(fileList);
+    stBankRecord                NOTFOUND = {"", "", "", 0, 0};
+
+    for (std::vector <stBankRecord>::iterator i = vRecords.begin(); i != vRecords.end(); i++)
+    {
+        if ((*i).AccountNumber == AccountNumberToFind)
+            return (*i);
+    }
+    return (NOTFOUND);
+}
+
+bool clientExistInList(const stListFile &fileList, const std::string &AccountNumberToFind)
+{
+    std::vector <stBankRecord>  vRecords = LoadDataFromFileToVector(fileList);
+
+    for (std::vector <stBankRecord>::iterator i = vRecords.begin(); i != vRecords.end(); i++)
+    {
+        if ((*i).AccountNumber == AccountNumberToFind)
+            return (true);
+    }
+    return (false);
+}
+
+void addLineToFile(std::string line, const std::string &fileName)
+{
+    std::fstream file;
+
+    file.open(fileName, std::ios::app);
+
+    if (file.is_open())
+    {
+        file << line << std::endl;
+        file.close();
+    }
+}
+
+void addRecordToFile( std::string ClientID, stListFile file)
+{
+        std::cout << "--- Adding a new client ---\n\n";
+        addLineToFile(convertBankRecordToLine(readBankRecord(ClientID), file.Delim), file.Name);
+        std::cout << "\nClient Added Successfuly!\n";
+}
+
+void updateClient(const stListFile &fileList, const std::string &toUpdate)
+{
+    std::vector <stBankRecord> vNewRecords;
+    
+    if (clientExistInList(fileList, toUpdate) == false)
+        std::cout << "Account " << toUpdate << " does not exist!\n";
+    else
+    {
+        vNewRecords = LoadDataFromFileToVector(fileList, toUpdate);
+        saveDataFromVectorToFile(vNewRecords, fileList);
+        std::cout << "Client " << toUpdate << " Updated Successfuly!\n\n";
+    }
+}
+
+void updateClient(const stListFile &fileList, const std::string &toUpdate, short int newBalance)
+{
+    std::vector <stBankRecord> vNewRecords;
+    
+    if (clientExistInList(fileList, toUpdate) == false)
+        std::cout << "Account " << toUpdate << " does not exist!\n";
+    else
+    {
+        vNewRecords = LoadDataFromFileToVector(fileList, toUpdate, newBalance);
+        saveDataFromVectorToFile(vNewRecords, fileList);
+        std::cout << "Client " << toUpdate << " Updated Successfuly!\n\n";
+    }
+}
+
+void deleteClient(const stListFile &fileList, std::string toDelete)
+{
+    std::vector <stBankRecord> vNewRecords;
+
+    if (clientExistInList(fileList, toDelete) == false)
+        std::cout << "Account " << toDelete << " does not exist!\n";
+    else
+    {
+        vNewRecords = LoadDataFromFileToVectorExceptFor(fileList, toDelete);
+        saveDataFromVectorToFile(vNewRecords, fileList);
+        std::cout << "Client " << toDelete << " Deleted Successfuly!\n\n";
+    }
+}
+
+void findClient(const stListFile fileList, std::string toFindAccountNumber)
+{
+    stBankRecord client = getRecordInList(fileList, toFindAccountNumber);
+
+    if (client.AccountNumber.empty())
+        std::cout << "Client With Account Number " << toFindAccountNumber << " NOT FOUND!\n";
+    else
+    {
+        std::cout << "\n-- The following are the clients details --\n";
+        printBankRecord(client);
+    }
+}
+
+void addClient(std::string ClientID, stBank &Menu)
+{
+    if (clientExistInList(Menu.ListFile, ClientID))
+        std::cout << "Account " << ClientID << " already exist!\n";
+    else
+        addRecordToFile(ClientID, Menu.ListFile);
 }
 
