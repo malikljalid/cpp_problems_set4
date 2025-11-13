@@ -109,4 +109,29 @@ int readWithdrawAmount(short int Balance)
     return (WithdrawAmount);
 }
 
+void printBankRecord(const stBankRecord &BR)
+{
+    std::cout << "Name           : " << BR.Name << std::endl;
 
+    std::cout << "Phone Number   : " << BR.PhoneNumber << std::endl;
+
+    std::cout << "Account Number : " << BR.AccountNumber << std::endl;
+
+    std::cout << "PinCode : " << BR.PinCode << std::endl;
+
+    std::cout << "Balance : " << BR.Balance << std::endl;
+}
+
+void fillBankRecordInfo(std::string &bankRecordInfo, std::string &line, std::string delim)
+{
+    int i = line.find(delim);
+    bankRecordInfo = line.substr(0, i);
+    line.erase(0, i + delim.length());
+}
+
+void fillBankRecordInfo(short int &bankRecordInfo, std::string &line, std::string delim)
+{
+    int i = line.find(delim);
+    bankRecordInfo = std::stoi(line.substr(0, i));
+    line.erase(0, i + delim.length());
+}
