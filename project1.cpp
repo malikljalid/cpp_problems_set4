@@ -9,10 +9,15 @@
 enum enMenuOptions  { LIST=1, ADD, DELETE, UPDATE, FIND, TRANSACTION, EXIT };
 enum enTransactions { DEPOSITE=1, WITHDRAW, BALANCES, BACKMENU };
 
-struct stListFile
+struct stPermission
 {
-    std::string Name;
-    std::string Delim;
+    bool ShowClientList;
+    bool AddClient;
+    bool UpdateClient;
+    bool DeleteClient;
+    bool FindClient;
+    bool Transactions;
+    bool ManageUsers;
 };
 
 struct stBankRecord
@@ -24,16 +29,29 @@ struct stBankRecord
     int   Balance;
 };
 
+struct stListFile
+{
+    std::string Name;
+    std::string Delim;
+};
+
 struct stOperation
 {
     enMenuOptions   Basic;
     enTransactions  Transaction;
 };
 
+struct stUser
+{
+    stBankRecord    Info;
+    stPermission    Permission;
+};
+
 struct stBank
-{   
-    stListFile                      ListFile;
+{
+    std::vector <stUser>            Users;
     std::vector <stBankRecord>      vListVector;
+    stListFile                      ListFile;
     stOperation                     Operation;
 };
 
