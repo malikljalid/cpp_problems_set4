@@ -11,6 +11,26 @@ namespace safeInput
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
+    bool getBool(const std::string &prompt)
+    {
+       bool value = false;
+       
+       while (true)
+       {
+            std::cout << prompt;
+            std::cin >> value;
+
+            if (!std::cin.fail())
+            {
+                clearInput();
+                return (value);
+            }
+
+            std::cout << "Invalid bool input! Please try again...\n";
+            clearInput();
+       }
+    }
+
     int getInt(const std::string &prompt)
     {
         int value = -404;
