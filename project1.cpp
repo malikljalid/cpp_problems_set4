@@ -643,13 +643,13 @@ void deleteUser(const stListFile &fileList, std::string toDelete)
 {
     std::vector <stUser> vNewUsers;
 
-    if (clientExistInList(fileList, toDelete) == false)
-        std::cout << "Account " << toDelete << " does not exist!\n";
+    if (userExistInList(fileList, toDelete) == false)
+        std::cout << "User [" << toDelete << "] does not exist!\n";
     else
     {
         vNewUsers = LoadUserDataFromFileToVectorExceptFor(fileList, toDelete);
         saveUserDataFromVectorToFile(vNewUsers, fileList);
-        std::cout << "Client " << toDelete << " Deleted Successfuly!\n\n";
+        std::cout << "Update [" << toDelete << "] Deleted Successfuly!\n\n";
     }
 }
 
@@ -936,10 +936,7 @@ void executeUserManagementOperation(stBank &Menu)
             if (Menu.CurrentUser.Permission.ShowClientList == true)
                 printHeader(Menu.vUsersVector);
             else
-            {
-                std::cout << "SOMETHING WRONG!\n";
                 showMenuOf((enMenuOptions)13);
-            }
             break;
         }
         case (ADDU)  :
