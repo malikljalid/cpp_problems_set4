@@ -105,6 +105,8 @@ stPermission convertIntToUserPermission(const short int &id)
 
     for (short int i = 0; i < 6; i++)
         *key[i] = ((id & value[i]) == value[i]);
+
+    return (P);
 }
 
 stUser readUserInfo(const std::string &username)
@@ -254,6 +256,8 @@ stUser convertLineToUserInfo(std::string &line, const std::string &delim = ":")
     fillStructMember(User.Name, line, delim);
     fillStructMember(User.Password, line, delim);
     fillStructMember(User.PermissionID, line, delim);
+    
+    User.Permission = convertIntToUserPermission(User.PermissionID);
 
     return (User);
 }
