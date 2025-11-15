@@ -83,11 +83,11 @@ stPermission readUserPermission(const std::string &username)
 
 short int convertUserPermissionsToInt(const stPermission &P)
 {
-    bool       key[6]           = { P.AddClient, P.DeleteClient, P.UpdateClient, P.FindClient, P.ManageUsers, P.Transactions };
-    short int  value[6]         = { 1, 2, 4, 8, 16, 32 };
+    bool       key[7]           = { P.ShowClientList, P.AddClient, P.DeleteClient, P.UpdateClient, P.FindClient, P.ManageUsers, P.Transactions };
+    short int  value[7]         = { 1, 2, 4, 8, 16, 32, 64 };
     short int  PermissionsID    = 0;
 
-    for (short int i = 0; i < 6; i++)
+    for (short int i = 0; i < 7; i++)
     {
         if (key[i] == true)
             PermissionsID += value[i];
@@ -100,10 +100,10 @@ stPermission convertIntToUserPermission(const short int &id)
 {
     stPermission P;
 
-    bool       *key[6]     = { &P.AddClient, &P.DeleteClient, &P.UpdateClient, &P.FindClient, &P.ManageUsers, &P.Transactions };
-    short int   value[6]   = { 1, 2, 4, 8, 16, 32 };
+    bool       *key[7]     = { &P.ShowClientList, &P.AddClient, &P.DeleteClient, &P.UpdateClient, &P.FindClient, &P.ManageUsers, &P.Transactions };
+    short int   value[7]   = { 1, 2, 4, 8, 16, 32, 64 };
 
-    for (short int i = 0; i < 6; i++)
+    for (short int i = 0; i < 7; i++)
         *key[i] = ((id & value[i]) == value[i]);
 
     return (P);
@@ -123,7 +123,10 @@ stUser readUserInfo(const std::string &username)
         User.PermissionID   = convertUserPermissionsToInt(User.Permission);
     }
     else
+    {
         User.Permission    = { true, true, true, true, true, true, true };
+        User.PermissionID  = -1;
+    }
 
     return (User);
 }
@@ -612,13 +615,13 @@ void updateUser(const stListFile &fileList, const std::string &toUpdate)
 {
     std::vector <stUser> vNewUsers;
     
-    if (clientExistInList(fileList, toUpdate) == false)
-        std::cout << "Account " << toUpdate << " does not exist!\n";
+    if (userExistInList(fileList, toUpdate) == false)
+        std::cout << "User [" << toUpdate << "] does not exist!\n";
     else
     {
         vNewUsers = LoadUserDataFromFileToVector(fileList, toUpdate);
         saveUserDataFromVectorToFile(vNewUsers, fileList);
-        std::cout << "Client " << toUpdate << " Updated Successfuly!\n\n";
+        std::cout << "User [" << toUpdate << "] Updated Successfuly!\n\n";
     }
 }
 
@@ -933,7 +936,10 @@ void executeUserManagementOperation(stBank &Menu)
             if (Menu.CurrentUser.Permission.ShowClientList == true)
                 printHeader(Menu.vUsersVector);
             else
+            {
+                std::cout << "SOMETHING WRONG!\n";
                 showMenuOf((enMenuOptions)13);
+            }
             break;
         }
         case (ADDU)  :
