@@ -671,10 +671,10 @@ void findUser(const stListFile &fileList, std::string toFindUserName)
     stUser user = getUserInList(fileList, toFindUserName);
 
     if (user.Name.empty())
-        std::cout << "Client With Account Number " << toFindUserName << " NOT FOUND!\n";
+        std::cout << "User With username [" << toFindUserName << "] NOT FOUND!\n";
     else
     {
-        std::cout << "\n-- The following are the clients details --\n";
+        std::cout << "\n-- The following are the user details --\n";
         printUserInfo(user);
     }
 }
@@ -971,25 +971,25 @@ void executeUserManagementOperation(stBank &Menu)
         }
         case (ADDU)  :
         {
-            showMenuOf(ADD);
+            showMenuOf(ADDU);
             addUser(readUserName(), Menu);
             break;
         }
         case (FINDU) :
         {
-            showMenuOf(FIND);
+            showMenuOf(FINDU);
             findUser(Menu.UsersFile, readUserName());
             break;
         }
         case (DELETEU) :
         {
-            showMenuOf(DELETE);
+            showMenuOf(DELETEU);
             deleteUser(Menu.UsersFile, readUserName());
             break;
         }
         case (UPDATEU) :
         {
-            showMenuOf(UPDATE);
+            showMenuOf(UPDATEU);
             updateUser(Menu.UsersFile, readUserName());
             break;
         }
@@ -1151,10 +1151,8 @@ stBank initBank(const std::string &ListFileName, const std::string &ListDelim, c
     return (Menu);
 }
 
-int main(void)
+void runBank(stBank Bank)
 {
-    stBank Bank = initBank("fclients.txt", ":", "fusers.txt", ":");
-
     while (true)
     {
         showMenu();
@@ -1166,6 +1164,13 @@ int main(void)
         }
         executeUserOperation(Bank);
     }
+}
+
+int main(void)
+{
+    stBank Bank = initBank("fclients.txt", ":", "fusers.txt", ":");
+
+    runBank(Bank);
 
     return (0);
 }
