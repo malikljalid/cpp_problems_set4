@@ -903,7 +903,7 @@ void showMenuOf(enUserManagement Option)
         }
         case (FINDU) :
         {
-            std::cout << "|\t    Find User Screen            |\n";
+            std::cout << "|\t    Find User Screen          |\n";
             break;
         }
         default :
@@ -1168,9 +1168,7 @@ void runBank(stBank Bank)
 
 int main(void)
 {
-    stBank Bank = initBank("fclients.txt", ":", "fusers.txt", ":");
-
-    runBank(Bank);
+    runBank(initBank("fclients.txt", ":", "fusers.txt", ":"));
 
     return (0);
 }
