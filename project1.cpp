@@ -70,38 +70,47 @@ stPermission readUserPermission(const std::string &username)
 
     std::cout << "Do you want to give "<< username <<" access to : \n";
 
-    Permission.AddClient    = safeInput::getBool("Adding Clients ? (Y/N) : ");
-    Permission.DeleteClient = safeInput::getBool("Deleting Clients ? (Y/N) : ");
-    Permission.UpdateClient = safeInput::getBool("Updating Clients ? (Y/N) : ");
-    Permission.FindClient   = safeInput::getBool("Finding Clients ? (Y/N) : ");
-    Permission.ManageUsers  = safeInput::getBool("Manage Clients ? (Y/N) : ");
-    Permission.Transactions = safeInput::getBool("Transactions ? (Y/N) : ");
+    Permission.ShowClientList   = safeInput::getBool("Listing Clients ? (Y/N) : ");
+    Permission.AddClient        = safeInput::getBool("Adding Clients ? (Y/N) : ");
+    Permission.DeleteClient     = safeInput::getBool("Deleting Clients ? (Y/N) : ");
+    Permission.UpdateClient     = safeInput::getBool("Updating Clients ? (Y/N) : ");
+    Permission.FindClient       = safeInput::getBool("Finding Clients ? (Y/N) : ");
+    Permission.ManageUsers      = safeInput::getBool("Manage Clients ? (Y/N) : ");
+    Permission.Transactions     = safeInput::getBool("Transactions ? (Y/N) : ");
 
     return (Permission);
 }
 
-stUser readUserInfo(void)
+short int convertUserPermissionsToInt(const stPermission &P)
 {
-    stUser User;
+    bool       key[6]           = { P.AddClient, P.DeleteClient, P.UpdateClient, P.FindClient, P.ManageUsers, P.Transactions };
+    short int  value[6]         = { 1, 2, 4, 8, 16, 32 };
+    short int  PermissionsID    = 0;
 
-    User.Name       = safeInput::getString("Please enter username : ");
+    for (short int i = 0; i < 6; i++)
+    {
+        if (key[i] == true)
+            PermissionsID += value[i];
+    }
 
-    User.Password   = safeInput::getString("Please enter password : ");
-
-    User.Permission = readUserPermission(User.Name);
-
-    return (User);
+    return (PermissionsID);
 }
 
 stUser readUserInfo(const std::string &username)
 {
     stUser User;
 
-    User.Name       = username;
+    User.Name           = username;
 
-    User.Password   = safeInput::getString("Please enter password : ");
+    User.Password       = safeInput::getString("Please enter password : ");
 
-    User.Permission = readUserPermission(User.Name);
+    if (safeInput::getBool("Do you want to give full access to " + username + " ? (Y/N) : ") == false)
+    {
+        User.Permission     = readUserPermission(User.Name);
+        User.PermissionID   = convertUserPermissionsToInt(User.Permission);
+    }
+    else
+        User.Permission    = { true, true, true, true, true, true, true };
 
     return (User);
 }
@@ -662,10 +671,10 @@ void addClient(const std::string &ClientID, stBank &Bank)
 
 void addUser(const std::string &username, stBank &bank)
 {
-    if (clientExistInList(bank.UsersFile, username))
-        std::cout << "User " << username << " already exist!\n";
+    if (userExistInList(bank.UsersFile, username))
+        std::cout << "User [" << username << "] already exist!\n";
     else
-        addRecordToFile(username, bank.UsersFile);
+        addUserToFile(username, bank.UsersFile);
 }
 
 void depositeClient(const std::string &ClientID, stBank &Bank)
@@ -693,8 +702,6 @@ void withdrawClient(const std::string &ClientID, stBank &Menu)
         updateClient(Menu.ListFile, ClientID, client.Balance);
     }
 }
-
-
 
 
 
@@ -824,9 +831,13 @@ void showMenuOf(enMenuOptions Option)
         case (EXIT) :
         {
             std::cout << "|\t    Program ENDS :)           |\n";
+            break;
         }
         default :
+        {
+            std::cout << "ACCESS DENIED!\nYou don't have permissions to do this,\nPlease contact your admin.\n";
             break;
+        }
     }
     std::cout << "---------------------------------------\n";
 }
@@ -904,31 +915,54 @@ void executeUserManagementOperation(stBank &Menu)
     {
         case (LISTU) :
         {
-            printHeader(Menu.vUsersVector);
+            if (Menu.CurrentUser.Permission.ShowClientList == true)
+                printHeader(Menu.vUsersVector);
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (ADDU)  :
         {
-            showMenuOf(ADD);
-            addUser(readUserName(), Menu);
+            if (Menu.CurrentUser.Permission.AddClient == true)
+            {
+                showMenuOf(ADD);
+                addUser(readUserName(), Menu);
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (FINDU) :
         {
-            showMenuOf(FIND);
-            findUser(Menu.UsersFile, readUserName());
+            if (Menu.CurrentUser.Permission.FindClient == true)
+            {
+                showMenuOf(FIND);
+                findUser(Menu.UsersFile, readUserName());
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (DELETEU) :
         {
-            showMenuOf(DELETE);
-            deleteUser(Menu.UsersFile, readUserName());
+            if (Menu.CurrentUser.Permission.DeleteClient == true)
+            {
+                showMenuOf(DELETE);
+                deleteUser(Menu.UsersFile, readUserName());
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (UPDATEU) :
         {
-            showMenuOf(UPDATE);
-            updateUser(Menu.UsersFile, readUserName());
+            if (Menu.CurrentUser.Permission.UpdateClient == true)
+            {
+                showMenuOf(UPDATE);
+                updateUser(Menu.UsersFile, readUserName());
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (MAINMENU) :
@@ -1011,6 +1045,7 @@ void executeUserOperation(stBank &Menu)
                     break;
                 executeUserTransaction(Menu);
             }
+            break;
         }
         case (USERS) :
         {
@@ -1022,6 +1057,7 @@ void executeUserOperation(stBank &Menu)
                     break;
                 executeUserManagementOperation(Menu);
             }
+            break;
         }
         case (LOGOUT) :
         {
