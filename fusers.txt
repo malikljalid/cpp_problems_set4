@@ -1,0 +1,3 @@
+admin:admin:-1
+zakaria:zacharia:40
+mira:1111:7
