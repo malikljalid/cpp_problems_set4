@@ -6,8 +6,9 @@
 #include <limits>
 #include "safeInput.hpp"
 
-enum enMenuOptions  { LIST=1, ADD, DELETE, UPDATE, FIND, TRANSACTION, EXIT };
-enum enTransactions { DEPOSITE=1, WITHDRAW, BALANCES, BACKMENU };
+enum enMenuOptions      { LIST=1, ADD, DELETE, UPDATE, FIND, TRANSACTION, USERS, EXIT };
+enum enUserManagement   { LISTU=1, ADDU, DELETEU, UPDATEU, FINDU, MAINMENU };
+enum enTransactions     { DEPOSITE=1, WITHDRAW, BALANCES, BACKMENU };
 
 struct stPermission
 {
@@ -18,6 +19,14 @@ struct stPermission
     bool FindClient;
     bool Transactions;
     bool ManageUsers;
+};
+
+struct stUser
+{
+    std::string     Name;
+    std::string     Password;
+    stPermission    Permission;
+    int             PermissionID;
 };
 
 struct stBankRecord
@@ -37,23 +46,72 @@ struct stListFile
 
 struct stOperation
 {
-    enMenuOptions   Basic;
-    enTransactions  Transaction;
-};
-
-struct stUser
-{
-    stBankRecord    Info;
-    stPermission    Permission;
+    enMenuOptions       Basic;
+    enTransactions      Transaction;
+    enUserManagement    UserManagement;
 };
 
 struct stBank
 {
-    std::vector <stUser>            Users;
+    std::vector <stUser>            vUsersVector;
     std::vector <stBankRecord>      vListVector;
     stListFile                      ListFile;
+    stListFile                      UsersFile;
     stOperation                     Operation;
 };
+
+
+
+
+stPermission readUserPermission(const std::string &username)
+{
+    stPermission Permission;
+
+    std::cout << "Do you want to give "<< username <<" access to : \n";
+
+    Permission.AddClient    = safeInput::getBool("Adding Clients ? (Y/N) : ");
+    Permission.DeleteClient = safeInput::getBool("Deleting Clients ? (Y/N) : ");
+    Permission.UpdateClient = safeInput::getBool("Updating Clients ? (Y/N) : ");
+    Permission.FindClient   = safeInput::getBool("Finding Clients ? (Y/N) : ");
+    Permission.ManageUsers  = safeInput::getBool("Manage Clients ? (Y/N) : ");
+    Permission.Transactions = safeInput::getBool("Transactions ? (Y/N) : ");
+
+    return (Permission);
+}
+
+stUser readUserInfo(void)
+{
+    stUser User;
+
+    User.Name       = safeInput::getString("Please enter username : ");
+
+    User.Password   = safeInput::getString("Please enter password : ");
+
+    User.Permission = readUserPermission(User.Name);
+
+    return (User);
+}
+
+stUser readUserInfo(const std::string &username)
+{
+    stUser User;
+
+    User.Name       = username;
+
+    User.Password   = safeInput::getString("Please enter password : ");
+
+    User.Permission = readUserPermission(User.Name);
+
+    return (User);
+}
+
+std::string readUserName(void)
+{
+    return (safeInput::getString("Please enter a username : "));
+}
+
+
+
 
 stBankRecord readBankRecord(void)
 {
@@ -61,7 +119,7 @@ stBankRecord readBankRecord(void)
 
     BR.Name = safeInput::getString("Please enter your name : ");
 
-    BR.PhoneNumber = safeInput::getString("Please enter your Phone number : ");
+    BR.PhoneNumber   = safeInput::getString("Please enter your Phone number : ");
 
     BR.AccountNumber = safeInput::getString("Please enter your Account Number : ");
 
@@ -76,17 +134,15 @@ stBankRecord readBankRecord(const std::string &ClientID)
 {
     stBankRecord BR;
 
-    BR.Name = safeInput::getString("Please enter your name : ");
+    BR.Name = safeInput::getString("Please enter your Name : ");
 
     BR.PhoneNumber = safeInput::getString("Please enter your Phone number : ");
 
     BR.AccountNumber = ClientID;
 
-    std::cout << "Please enter your PinCode : ";
-    std::cin >> BR.PinCode;
+    BR.PinCode = safeInput::getInt("Please enter your PinCode : ");
 
-    std::cout << "Please enter your Balance : ";
-    std::cin >> BR.Balance;
+    BR.Balance = safeInput::getInt("Please enter your Balance : ");
 
     return (BR);
 }
@@ -104,6 +160,11 @@ enMenuOptions readUserOperation(void)
 enTransactions readUserTransaction(void)
 {
     return ((enTransactions)safeInput::getInt("\nChoose what do you want to do [1 ~ 4] ? : "));
+}
+
+enUserManagement readUserManagementOperation(void)
+{
+    return ((enUserManagement)safeInput::getInt("\nChoose what do you want to do [1 ~ 6] ? : "));
 }
 
 int readDepositeAmount(void)
@@ -140,39 +201,64 @@ void printBankRecord(const stBankRecord &BR)
     std::cout << "Balance : " << BR.Balance << std::endl;
 }
 
-void fillBankRecordInfo(std::string &bankRecordInfo, std::string &line, const std::string &delim)
+void printUserInfo(const stUser &user)
+{
+    std::cout << "username   : " << user.Name << std::endl;
+
+    std::cout << "password   : " << user.Password << std::endl;
+
+    std::cout << "Permissions : " << user.PermissionID << std::endl;
+}
+
+void fillStructMember(std::string &structMember, std::string &line, const std::string &delim)
 {
     int i = line.find(delim);
-    bankRecordInfo = line.substr(0, i);
+    structMember = line.substr(0, i);
     line.erase(0, i + delim.length());
 }
 
-void fillBankRecordInfo(int &bankRecordInfo, std::string &line, const std::string &delim)
+void fillStructMember(int &structMember, std::string &line, const std::string &delim)
 {
     int i = line.find(delim);
-    bankRecordInfo = std::stoi(line.substr(0, i));
+    structMember = std::stoi(line.substr(0, i));
     line.erase(0, i + delim.length());
+}
+
+stUser convertLineToUserInfo(std::string &line, const std::string &delim = ":")
+{
+    stUser User;
+
+    fillStructMember(User.Name, line, delim);
+    fillStructMember(User.Password, line, delim);
+    fillStructMember(User.PermissionID, line, delim);
+
+    return (User);
 }
 
 stBankRecord convertLineToBankRecord(std::string &line, const std::string &delim = ":")
 {
     stBankRecord    BR;
 
-    fillBankRecordInfo(BR.Name, line, delim);
-    fillBankRecordInfo(BR.PhoneNumber, line, delim);
-    fillBankRecordInfo(BR.AccountNumber, line, delim);
-    fillBankRecordInfo(BR.PinCode, line, delim);
-    fillBankRecordInfo(BR.Balance, line, delim);
+    fillStructMember(BR.Name, line, delim);
+    fillStructMember(BR.PhoneNumber, line, delim);
+    fillStructMember(BR.AccountNumber, line, delim);
+    fillStructMember(BR.PinCode, line, delim);
+    fillStructMember(BR.Balance, line, delim);
 
     return (BR);
 }
 
-std::string  convertBankRecordToLine(const stBankRecord &BR, std::string delim = ":")
+std::string convertUserInfoToLine(const stUser &User, const std::string &delim = ":")
+{
+    return (User.Name + delim + User.Password + delim + std::to_string(User.PermissionID));
+}
+
+std::string  convertBankRecordToLine(const stBankRecord &BR, const std::string &delim = ":")
 {
     return (BR.Name + delim + BR.PhoneNumber + delim + BR.AccountNumber + delim + std::to_string(BR.PinCode) + delim + std::to_string(BR.Balance));
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile &fileList)
+std::vector <stBankRecord> LoadClientDataFromFileToVector(const stListFile &fileList)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
@@ -191,7 +277,26 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile &fileList)
     return (vRecords);
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile fileList, const std::string &ExceptionClientAccountNumber)
+std::vector <stUser> LoadUserDataFromFileToVector(const stListFile &fileList)
+{
+    std::fstream                file;
+    std::vector <stUser>        vUsers;
+
+    file.open(fileList.Name, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+            vUsers.push_back(convertLineToUserInfo(Line, fileList.Delim));;
+        file.close();
+    }
+
+    return (vUsers);
+}
+
+std::vector <stBankRecord> LoadClientDataFromFileToVector(const stListFile fileList, const std::string &ExceptionClientAccountNumber)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
@@ -217,7 +322,33 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile fileList, c
     return (vRecords);
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile &fileList, const std::string &ExceptionClientAccountNumber, const int &newBalance)
+std::vector <stUser> LoadUserDataFromFileToVector(const stListFile fileList, const std::string &ExceptionUserName)
+{
+    std::fstream                file;
+    std::vector <stUser>        vUsers;
+    stUser                      User;
+
+    file.open(fileList.Name, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+        {
+            User = convertLineToUserInfo(Line, fileList.Delim);
+            if (User.Name == ExceptionUserName)
+                User = readUserInfo(ExceptionUserName);
+            vUsers.push_back(User);
+
+        }
+        file.close();
+    }
+
+    return (vUsers);
+}
+
+std::vector <stBankRecord> LoadClientDataFromFileToVector(const stListFile &fileList, const std::string &ExceptionClientAccountNumber, const int &newBalance)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
@@ -235,7 +366,6 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile &fileList, 
             if (BR.AccountNumber == ExceptionClientAccountNumber)
                 BR.Balance = newBalance;
             vRecords.push_back(BR);
-
         }
         file.close();
     }
@@ -243,7 +373,32 @@ std::vector <stBankRecord> LoadDataFromFileToVector(const stListFile &fileList, 
     return (vRecords);
 }
 
-std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(const stListFile fileList, const std::string &ExceptionClientAccountNumber)
+std::vector <stUser> LoadUserDataFromFileToVector(const stListFile &fileList, const std::string &ExceptionUserName, const std::string &newPassword)
+{
+    std::fstream          file;
+    std::vector <stUser>  vUsers;
+    stUser                User;
+
+    file.open(fileList.Name, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+        {
+            User = convertLineToUserInfo(Line, fileList.Delim);
+            if (User.Name == ExceptionUserName)
+                User.Password = newPassword;
+            vUsers.push_back(User);
+        }
+        file.close();
+    }
+
+    return (vUsers);
+}
+
+std::vector <stBankRecord> LoadClientDataFromFileToVectorExceptFor(const stListFile &fileList, const std::string &ExceptionClientAccountNumber)
 {
     std::fstream                file;
     std::vector <stBankRecord>  vRecords;
@@ -267,7 +422,31 @@ std::vector <stBankRecord> LoadDataFromFileToVectorExceptFor(const stListFile fi
     return (vRecords);
 }
 
-void saveDataFromVectorToFile(std::vector <stBankRecord> &vRecords, const stListFile &fileList)
+std::vector <stUser> LoadUserDataFromFileToVectorExceptFor(const stListFile &fileList, const std::string &ExceptionUserName)
+{
+    std::fstream          file;
+    std::vector <stUser>  vUsers;
+    stUser                User;
+
+    file.open(fileList.Name, std::ios::in);
+
+    if (file.is_open())
+    {
+        std::string Line = "";
+
+        while (getline(file, Line))
+        {
+            User = convertLineToUserInfo(Line, fileList.Delim);
+            if (User.Name != ExceptionUserName)
+                vUsers.push_back(User);
+        }
+        file.close();
+    }
+
+    return (vUsers);
+}
+
+void saveClientDataFromVectorToFile(std::vector <stBankRecord> &vRecords, const stListFile &fileList)
 {
     std::fstream file;
 
@@ -281,26 +460,67 @@ void saveDataFromVectorToFile(std::vector <stBankRecord> &vRecords, const stList
     }
 }
 
+void saveUserDataFromVectorToFile(std::vector <stUser> &vUsers, const stListFile &fileList)
+{
+    std::fstream file;
+
+    file.open(fileList.Name, std::ios::out);
+
+    if (file.is_open())
+    {
+        for (stUser &i : vUsers)
+            file << convertUserInfoToLine(i, fileList.Delim) << std::endl;
+        file.close();
+    }
+}
+
 stBankRecord getRecordInList(const stListFile &fileList, const std::string &AccountNumberToFind)
 {
-    std::vector <stBankRecord>  vRecords = LoadDataFromFileToVector(fileList);
-    stBankRecord                NOTFOUND = {"", "", "", 0, 0};
+    std::vector <stBankRecord>  vRecords = LoadClientDataFromFileToVector(fileList);
+    stBankRecord                NOTFOUND = { "", "", "", 0, 0 };
 
     for (std::vector <stBankRecord>::iterator i = vRecords.begin(); i != vRecords.end(); i++)
     {
         if ((*i).AccountNumber == AccountNumberToFind)
             return (*i);
     }
+
+    return (NOTFOUND);
+}
+
+stUser  getUserInList(const stListFile &fileList, const std::string &UserNameToFind)
+{
+    std::vector <stUser>    vUsers      = LoadUserDataFromFileToVector(fileList);
+    stUser                  NOTFOUND    = { "", "", {0, 0, 0, 0, 0, 0, 0}, 0};
+
+    for (std::vector <stUser>::iterator i = vUsers.begin(); i != vUsers.end(); i++)
+    {
+        if ((*i).Name == UserNameToFind)
+            return (*i);
+    }
+
     return (NOTFOUND);
 }
 
 bool clientExistInList(const stListFile &fileList, const std::string &AccountNumberToFind)
 {
-    std::vector <stBankRecord>  vRecords = LoadDataFromFileToVector(fileList);
+    std::vector <stBankRecord>  vRecords = LoadClientDataFromFileToVector(fileList);
 
     for (std::vector <stBankRecord>::iterator i = vRecords.begin(); i != vRecords.end(); i++)
     {
         if ((*i).AccountNumber == AccountNumberToFind)
+            return (true);
+    }
+    return (false);
+}
+
+bool userExistInList(const stListFile &fileList, const std::string &UserNameToFind)
+{
+    std::vector <stBankRecord>  vRecords = LoadClientDataFromFileToVector(fileList);
+
+    for (std::vector <stBankRecord>::iterator i = vRecords.begin(); i != vRecords.end(); i++)
+    {
+        if ((*i).Name == UserNameToFind)
             return (true);
     }
     return (false);
@@ -326,6 +546,13 @@ void addRecordToFile(const std::string &ClientID, const stListFile &fileList)
         std::cout << "\nClient Added Successfuly!\n";
 }
 
+void addUserToFile(const std::string &username, const stListFile &fileList)
+{
+        std::cout << "--- Adding a new user ---\n\n";
+        addLineToFile(convertUserInfoToLine(readUserInfo(username), fileList.Delim), fileList.Name);
+        std::cout << "\nUser Added Successfuly!\n";
+}
+
 void updateClient(const stListFile &fileList, const std::string &toUpdate)
 {
     std::vector <stBankRecord> vNewRecords;
@@ -334,8 +561,8 @@ void updateClient(const stListFile &fileList, const std::string &toUpdate)
         std::cout << "Account " << toUpdate << " does not exist!\n";
     else
     {
-        vNewRecords = LoadDataFromFileToVector(fileList, toUpdate);
-        saveDataFromVectorToFile(vNewRecords, fileList);
+        vNewRecords = LoadClientDataFromFileToVector(fileList, toUpdate);
+        saveClientDataFromVectorToFile(vNewRecords, fileList);
         std::cout << "Client " << toUpdate << " Updated Successfuly!\n\n";
     }
 }
@@ -354,6 +581,20 @@ void updateClient(const stListFile &fileList, const std::string &toUpdate, short
     }
 }
 
+void updateUser(const stListFile &fileList, const std::string &toUpdate)
+{
+    std::vector <stUser> vNewUsers;
+    
+    if (clientExistInList(fileList, toUpdate) == false)
+        std::cout << "Account " << toUpdate << " does not exist!\n";
+    else
+    {
+        vNewUsers = LoadUserDataFromFileToVector(fileList, toUpdate);
+        saveUserDataFromVectorToFile(vNewUsers, fileList);
+        std::cout << "Client " << toUpdate << " Updated Successfuly!\n\n";
+    }
+}
+
 void deleteClient(const stListFile &fileList, std::string toDelete)
 {
     std::vector <stBankRecord> vNewRecords;
@@ -362,8 +603,22 @@ void deleteClient(const stListFile &fileList, std::string toDelete)
         std::cout << "Account " << toDelete << " does not exist!\n";
     else
     {
-        vNewRecords = LoadDataFromFileToVectorExceptFor(fileList, toDelete);
-        saveDataFromVectorToFile(vNewRecords, fileList);
+        vNewRecords = LoadClientDataFromFileToVectorExceptFor(fileList, toDelete);
+        saveClientDataFromVectorToFile(vNewRecords, fileList);
+        std::cout << "Client " << toDelete << " Deleted Successfuly!\n\n";
+    }
+}
+
+void deleteUser(const stListFile &fileList, std::string toDelete)
+{
+    std::vector <stUser> vNewUsers;
+
+    if (clientExistInList(fileList, toDelete) == false)
+        std::cout << "Account " << toDelete << " does not exist!\n";
+    else
+    {
+        vNewUsers = LoadUserDataFromFileToVectorExceptFor(fileList, toDelete);
+        saveUserDataFromVectorToFile(vNewUsers, fileList);
         std::cout << "Client " << toDelete << " Deleted Successfuly!\n\n";
     }
 }
@@ -381,24 +636,45 @@ void findClient(const stListFile &fileList, std::string toFindAccountNumber)
     }
 }
 
-void addClient(const std::string &ClientID, stBank &Menu)
+void findUser(const stListFile &fileList, std::string toFindUserName)
 {
-    if (clientExistInList(Menu.ListFile, ClientID))
-        std::cout << "Account " << ClientID << " already exist!\n";
+    stUser user = getUserInList(fileList, toFindUserName);
+
+    if (user.Name.empty())
+        std::cout << "Client With Account Number " << toFindUserName << " NOT FOUND!\n";
     else
-        addRecordToFile(ClientID, Menu.ListFile);
+    {
+        std::cout << "\n-- The following are the clients details --\n";
+        printUserInfo(user);
+    }
 }
 
-void depositeClient(const std::string &ClientID, stBank &Menu)
+void addClient(const std::string &ClientID, stBank &Bank)
 {
-    stBankRecord client = getRecordInList(Menu.ListFile, ClientID);
+    if (clientExistInList(Bank.ListFile, ClientID))
+        std::cout << "Account " << ClientID << " already exist!\n";
+    else
+        addRecordToFile(ClientID, Bank.ListFile);
+}
+
+void addUser(const std::string &username, stBank &bank)
+{
+    if (clientExistInList(bank.UsersFile, username))
+        std::cout << "User " << username << " already exist!\n";
+    else
+        addRecordToFile(username, bank.UsersFile);
+}
+
+void depositeClient(const std::string &ClientID, stBank &Bank)
+{
+    stBankRecord client = getRecordInList(Bank.ListFile, ClientID);
 
     if (client.Name.empty())
         std::cout << "Client " << ClientID << " does not exist!\n";
     else
     {
         client.Balance += readDepositeAmount();
-        updateClient(Menu.ListFile, ClientID, client.Balance);
+        updateClient(Bank.ListFile, ClientID, client.Balance);
     }
 }
 
@@ -415,13 +691,16 @@ void withdrawClient(const std::string &ClientID, stBank &Menu)
     }
 }
 
-stBank initBank(const std::string &fileName, const std::string &delim)
+stBank initBank(const std::string &ListFileName, const std::string &ListDelim, const std::string &UsersFileName, const std::string &UsersDelim)
 {
     stBank Menu;
 
-    Menu.ListFile.Name  = fileName;
-    Menu.ListFile.Delim = delim;
-    Menu.vListVector    = LoadDataFromFileToVector(Menu.ListFile);
+    Menu.ListFile.Name      = ListFileName;
+    Menu.ListFile.Delim     = ListDelim;
+    Menu.UsersFile.Name     = UsersFileName;
+    Menu.UsersFile.Delim    = UsersDelim;
+    Menu.vListVector        = LoadClientDataFromFileToVector(Menu.ListFile);
+    Menu.vUsersVector       = LoadUserDataFromFileToVector(Menu.UsersFile);
 
     return (Menu);
 }
@@ -444,6 +723,25 @@ void printHeader(std::vector <stBankRecord> vClients)
         std::cout << " | " << std::setw(20) << (*i).Name;
         std::cout << " | " << std::setw(12) << (*i).PhoneNumber;
         std::cout << " | " << std::setw(6)  << (*i).Balance << "  |\n";
+    }
+
+    std::cout << "  ______________________________________________________________________________\n\n";
+}
+
+void printHeader(std::vector <stUser> vUsers)
+{
+    std::cout << "\n\t\t\t    Client List(" << vUsers.size() << ") Client(s)\n";
+    std::cout << "  ______________________________________________________________________________\n\n";
+    std::cout << " | " << std::setw(15) << std::left << "User Name";
+    std::cout << " | " << std::setw(9)  << std::left << "Password";
+    std::cout << " | " << std::setw(20) << std::left << "Permissions |\n";
+    std::cout << "  ______________________________________________________________________________\n\n";
+
+    for (std::vector <stUser>::iterator  i = vUsers.begin(); i != vUsers.end(); i++)
+    {
+        std::cout << " | " << std::setw(15) << (*i).Name;
+        std::cout << " | " << std::setw(9)  << (*i).Password;
+        std::cout << " | " << std::setw(20) << (*i).PermissionID  << "  |\n";
     }
 
     std::cout << "  ______________________________________________________________________________\n\n";
@@ -549,7 +847,7 @@ void showMenu(void)
 
 void showTransactionMenu(void)
 {
-    std::cout << "---------------------------------------\n";
+    std::cout << "\n---------------------------------------\n";
     std::cout << "|\tTransactions Menu Screen      |\n";
     std::cout << "---------------------------------------\n";
     std::cout << "\t[1] : Deposite \n";
@@ -558,6 +856,62 @@ void showTransactionMenu(void)
     std::cout << "\t[4] : Main Menu \n";
     std::cout << "---------------------------------------\n";
     std::cout << "---------------------------------------\n";
+}
+
+void showUserManagementMenu(void)
+{
+    std::cout << "---------------------------------------\n";
+    std::cout << "|\tUser Management Menu Screen      |\n";
+    std::cout << "---------------------------------------\n";
+    std::cout << "\t[1] : Show Users List\n";
+    std::cout << "\t[2] : Add New User\n";
+    std::cout << "\t[3] : Delete User\n";
+    std::cout << "\t[4] : Update User Info\n";
+    std::cout << "\t[5] : Find User\n";
+    std::cout << "\t[5] : Main Menu\n";
+    std::cout << "---------------------------------------\n";
+    std::cout << "---------------------------------------\n";
+}
+
+void executeUserManagementOperation(stBank &Menu)
+{
+    switch (Menu.Operation.UserManagement)
+    {
+        case (LISTU) :
+        {
+            printHeader(Menu.vUsersVector);
+            break;
+        }
+        case (ADDU)  :
+        {
+            showMenuOf(ADD);
+            addUser(readUserName(), Menu);
+            break;
+        }
+        case (FINDU) :
+        {
+            showMenuOf(FIND);
+            findUser(Menu.UsersFile, readUserName());
+            break;
+        }
+        case (DELETEU) :
+        {
+            showMenuOf(DELETE);
+            deleteUser(Menu.UsersFile, readUserName());
+            break;
+        }
+        case (UPDATEU) :
+        {
+            showMenuOf(UPDATE);
+            updateUser(Menu.UsersFile, readUserName());
+            break;
+        }
+        case (MAINMENU) :
+            break;
+    }
+
+    if (Menu.Operation.UserManagement == ADDU || Menu.Operation.UserManagement == DELETEU || Menu.Operation.UserManagement == UPDATEU)
+        Menu.vUsersVector = LoadUserDataFromFileToVector(Menu.UsersFile);
 }
 
 void executeUserTransaction(stBank &Menu)
@@ -586,7 +940,7 @@ void executeUserTransaction(stBank &Menu)
     }
 
     if (Menu.Operation.Transaction == DEPOSITE || Menu.Operation.Transaction == WITHDRAW)
-        Menu.vListVector = LoadDataFromFileToVector(Menu.ListFile);
+        Menu.vListVector = LoadClientDataFromFileToVector(Menu.ListFile);
 }
 
 void executeUserOperation(stBank &Menu)
@@ -633,17 +987,28 @@ void executeUserOperation(stBank &Menu)
                 executeUserTransaction(Menu);
             }
         }
+        case (USERS) :
+        {
+            while (1)
+            {
+                showTransactionMenu();
+                Menu.Operation.UserManagement = readUserManagementOperation();
+                if (Menu.Operation.UserManagement == MAINMENU)
+                    break;
+                executeUserManagementOperation(Menu);
+            }
+        }
         case (EXIT) :
             break;
     }
 
     if (Menu.Operation.Basic == ADD || Menu.Operation.Basic == DELETE || Menu.Operation.Basic == UPDATE)
-        Menu.vListVector = LoadDataFromFileToVector(Menu.ListFile);
+        Menu.vListVector = LoadClientDataFromFileToVector(Menu.ListFile);
 }
 
 int main(void)
 {
-    stBank Bank = initBank("clients_bankRecords.txt", ":");
+    stBank Bank = initBank("fclients.txt", ":", "fusers.txt", ":");
 
     while (true)
     {
