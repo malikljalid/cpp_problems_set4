@@ -62,8 +62,6 @@ struct stBank
 };
 
 
-
-
 stPermission readUserPermission(const std::string &username)
 {
     stPermission Permission;
@@ -721,10 +719,6 @@ void withdrawClient(const std::string &ClientID, stBank &Menu)
     }
 }
 
-
-
-
-
 stUser login(const stBank &Bank)
 {
     std::string username;
@@ -743,10 +737,6 @@ stUser login(const stBank &Bank)
         return (login(Bank));
     } 
 }
-
-
-
-
 
 void printHeader(std::vector <stBankRecord> vClients)
 {
@@ -1165,6 +1155,7 @@ void runBank(stBank Bank)
         executeUserOperation(Bank);
     }
 }
+
 
 int main(void)
 {
