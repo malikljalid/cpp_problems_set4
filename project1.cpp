@@ -755,7 +755,7 @@ void printHeader(std::vector <stBankRecord> vClients)
     std::cout << " | " << std::setw(15) << std::left << "Account Number";
     std::cout << " | " << std::setw(9)  << std::left << "Pin Code";
     std::cout << " | " << std::setw(20) << std::left << "Client Name";
-    std::cout << " | " << std::setw(12) << std::left << "Phone";
+    std::cout << " | " << std::setw(13) << std::left << "Phone";
     std::cout << " | " << std::setw(6)  << std::left << "Balance |\n";
     std::cout << "  ______________________________________________________________________________\n\n";
 
@@ -773,21 +773,21 @@ void printHeader(std::vector <stBankRecord> vClients)
 
 void printHeader(std::vector <stUser> vUsers)
 {
-    std::cout << "\n\t\t\t    Client List(" << vUsers.size() << ") Client(s)\n";
-    std::cout << "  ______________________________________________________________________________\n\n";
+    std::cout << "\n\t\t\t    Users List(" << vUsers.size() << ") User(s)\n";
+    std::cout << "  _________________________________________________\n\n";
     std::cout << " | " << std::setw(15) << std::left << "User Name";
-    std::cout << " | " << std::setw(9)  << std::left << "Password";
-    std::cout << " | " << std::setw(20) << std::left << "Permissions |\n";
-    std::cout << "  ______________________________________________________________________________\n\n";
+    std::cout << " | " << std::setw(15)  << std::left << "Password";
+    std::cout << " | " << std::setw(12) << std::left << "Permissions |\n";
+    std::cout << "  _________________________________________________\n\n";
 
     for (std::vector <stUser>::iterator  i = vUsers.begin(); i != vUsers.end(); i++)
     {
         std::cout << " | " << std::setw(15) << (*i).Name;
-        std::cout << " | " << std::setw(9)  << (*i).Password;
-        std::cout << " | " << std::setw(20) << (*i).PermissionID  << "  |\n";
+        std::cout << " | " << std::setw(15)  << (*i).Password;
+        std::cout << " | " << std::setw(12) << (*i).PermissionID  << "|\n";
     }
 
-    std::cout << "  ______________________________________________________________________________\n\n";
+    std::cout << "  _________________________________________________\n\n";
 }
 
 void printBalancesHeader(std::vector <stBankRecord> vClients)
@@ -881,6 +881,39 @@ void showMenuOf(enTransactions Option)
     std::cout << "---------------------------------------\n";
 }
 
+void showMenuOf(enUserManagement Option)
+{
+    std::cout << "---------------------------------------\n";
+    switch (Option)
+    {
+        case (ADDU) :
+        {
+            std::cout << "|\t    Add User Screen            |\n";
+            break;
+        }
+        case (DELETEU) :
+        {
+            std::cout << "|\t    Delete User Screen         |\n";
+            break;
+        }
+        case (UPDATEU) :
+        {
+            std::cout << "|\t    Update User Screen          |\n";
+            break;
+        }
+        case (FINDU) :
+        {
+            std::cout << "|\t    Find User Screen            |\n";
+            break;
+        }
+        default :
+        {
+            break;
+        }
+    }
+    std::cout << "---------------------------------------\n";
+}
+
 void showMenu(void)
 {
     std::cout << "---------------------------------------\n";
@@ -915,14 +948,14 @@ void showTransactionMenu(void)
 void showUserManagementMenu(void)
 {
     std::cout << "---------------------------------------\n";
-    std::cout << "|\tUser Management Menu Screen      |\n";
+    std::cout << "|\tUser Management Menu Screen    |\n";
     std::cout << "---------------------------------------\n";
     std::cout << "\t[1] : Show Users List\n";
     std::cout << "\t[2] : Add New User\n";
     std::cout << "\t[3] : Delete User\n";
     std::cout << "\t[4] : Update User Info\n";
     std::cout << "\t[5] : Find User\n";
-    std::cout << "\t[5] : Main Menu\n";
+    std::cout << "\t[6] : Main Menu\n";
     std::cout << "---------------------------------------\n";
     std::cout << "---------------------------------------\n";
 }
@@ -933,54 +966,31 @@ void executeUserManagementOperation(stBank &Menu)
     {
         case (LISTU) :
         {
-            if (Menu.CurrentUser.Permission.ShowClientList == true)
-                printHeader(Menu.vUsersVector);
-            else
-                showMenuOf((enMenuOptions)13);
+            printHeader(Menu.vUsersVector);
             break;
         }
         case (ADDU)  :
         {
-            if (Menu.CurrentUser.Permission.AddClient == true)
-            {
-                showMenuOf(ADD);
-                addUser(readUserName(), Menu);
-            }
-            else
-                showMenuOf((enMenuOptions)13);
+            showMenuOf(ADD);
+            addUser(readUserName(), Menu);
             break;
         }
         case (FINDU) :
         {
-            if (Menu.CurrentUser.Permission.FindClient == true)
-            {
-                showMenuOf(FIND);
-                findUser(Menu.UsersFile, readUserName());
-            }
-            else
-                showMenuOf((enMenuOptions)13);
+            showMenuOf(FIND);
+            findUser(Menu.UsersFile, readUserName());
             break;
         }
         case (DELETEU) :
         {
-            if (Menu.CurrentUser.Permission.DeleteClient == true)
-            {
-                showMenuOf(DELETE);
-                deleteUser(Menu.UsersFile, readUserName());
-            }
-            else
-                showMenuOf((enMenuOptions)13);
+            showMenuOf(DELETE);
+            deleteUser(Menu.UsersFile, readUserName());
             break;
         }
         case (UPDATEU) :
         {
-            if (Menu.CurrentUser.Permission.UpdateClient == true)
-            {
-                showMenuOf(UPDATE);
-                updateUser(Menu.UsersFile, readUserName());
-            }
-            else
-                showMenuOf((enMenuOptions)13);
+            showMenuOf(UPDATE);
+            updateUser(Menu.UsersFile, readUserName());
             break;
         }
         case (MAINMENU) :
@@ -1026,55 +1036,88 @@ void executeUserOperation(stBank &Menu)
     {
         case (LIST) :
         {
-            printHeader(Menu.vListVector);
+            if (Menu.CurrentUser.Permission.ShowClientList == true)
+                printHeader(Menu.vListVector);
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (ADD)  :
         {
-            showMenuOf(ADD);
-            addClient(readAccountNumber(), Menu);
+            if (Menu.CurrentUser.Permission.AddClient == true)
+            {
+                showMenuOf(ADD);
+                addClient(readAccountNumber(), Menu);
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (FIND) :
         {
-            showMenuOf(FIND);
-            findClient(Menu.ListFile, readAccountNumber());
+            if (Menu.CurrentUser.Permission.FindClient == true)
+            {
+                showMenuOf(FIND);
+                findClient(Menu.ListFile, readAccountNumber());
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (DELETE) :
         {
-            showMenuOf(DELETE);
-            deleteClient(Menu.ListFile, readAccountNumber());
+            if (Menu.CurrentUser.Permission.DeleteClient == true)
+            {
+                showMenuOf(DELETE);
+                deleteClient(Menu.ListFile, readAccountNumber());
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (UPDATE) :
         {
-            showMenuOf(UPDATE);
-            updateClient(Menu.ListFile, readAccountNumber());
+            if (Menu.CurrentUser.Permission.UpdateClient == true)
+            {
+                showMenuOf(UPDATE);
+                updateClient(Menu.ListFile, readAccountNumber());
+            }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (TRANSACTION) :
         {
-            while (1)
+            if (Menu.CurrentUser.Permission.Transactions == true)
             {
-                showTransactionMenu();
-                Menu.Operation.Transaction = readUserTransaction();
-                if (Menu.Operation.Transaction == BACKMENU)
-                    break;
-                executeUserTransaction(Menu);
+                while (1)
+                {
+                    showTransactionMenu();
+                    Menu.Operation.Transaction = readUserTransaction();
+                    if (Menu.Operation.Transaction == BACKMENU)
+                        break;
+                    executeUserTransaction(Menu);
+                }
             }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (USERS) :
         {
-            while (1)
+            if (Menu.CurrentUser.Permission.ManageUsers == true)
             {
-                showUserManagementMenu();
-                Menu.Operation.UserManagement = readUserManagementOperation();
-                if (Menu.Operation.UserManagement == MAINMENU)
-                    break;
-                executeUserManagementOperation(Menu);
+                while (1)
+                {
+                    showUserManagementMenu();
+                    Menu.Operation.UserManagement = readUserManagementOperation();
+                    if (Menu.Operation.UserManagement == MAINMENU)
+                        break;
+                    executeUserManagementOperation(Menu);
+                }
             }
+            else
+                showMenuOf((enMenuOptions)13);
             break;
         }
         case (LOGOUT) :
