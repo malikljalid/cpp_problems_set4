@@ -763,7 +763,7 @@ void printHeader(std::vector <stBankRecord> vClients)
 
 void printHeader(std::vector <stUser> vUsers)
 {
-    std::cout << "\n\t\t\t    Users List(" << vUsers.size() << ") User(s)\n";
+    std::cout << "\n\t\t    Users List(" << vUsers.size() << ") User(s)\n";
     std::cout << "  _________________________________________________\n\n";
     std::cout << " | " << std::setw(15) << std::left << "User Name";
     std::cout << " | " << std::setw(15)  << std::left << "Password";
