@@ -256,7 +256,7 @@ stUser convertLineToUserInfo(std::string &line, const std::string &delim = ":")
     fillStructMember(User.Name, line, delim);
     fillStructMember(User.Password, line, delim);
     fillStructMember(User.PermissionID, line, delim);
-    
+
     User.Permission = convertIntToUserPermission(User.PermissionID);
 
     return (User);
@@ -367,8 +367,8 @@ std::vector <stUser> LoadUserDataFromFileToVector(const stListFile fileList, con
             if (User.Name == ExceptionUserName)
                 User = readUserInfo(ExceptionUserName);
             vUsers.push_back(User);
-
         }
+    
         file.close();
     }
 
