@@ -96,6 +96,17 @@ short int convertUserPermissionsToInt(const stPermission &P)
     return (PermissionsID);
 }
 
+stPermission convertIntToUserPermission(const short int &id)
+{
+    stPermission P;
+
+    bool       *key[6]     = { &P.AddClient, &P.DeleteClient, &P.UpdateClient, &P.FindClient, &P.ManageUsers, &P.Transactions };
+    short int   value[6]   = { 1, 2, 4, 8, 16, 32 };
+
+    for (short int i = 0; i < 6; i++)
+        *key[i] = ((id & value[i]) == value[i]);
+}
+
 stUser readUserInfo(const std::string &username)
 {
     stUser User;
