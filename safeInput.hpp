@@ -13,7 +13,7 @@ namespace safeInput
 
     bool getBool(const std::string &prompt)
     {
-       bool value = false;
+       char value = '\0';
        
        while (true)
        {
@@ -22,8 +22,16 @@ namespace safeInput
 
             if (!std::cin.fail())
             {
-                clearInput();
-                return (value);
+                if (value == 'y' || value == 'Y')
+                {
+                    clearInput();
+                    return (true);
+                }
+                if (value == 'n' || value == 'N')
+                {
+                    clearInput();
+                    return (false);
+                }
             }
 
             std::cout << "Invalid bool input! Please try again...\n";
