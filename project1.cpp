@@ -180,7 +180,7 @@ std::string readAccountNumber(void)
 
 enMenuOptions readUserOperation(void)
 {
-    return ((enMenuOptions)safeInput::getInt("\nChoose what do you want to do [1 ~ 7] ? : "));
+    return ((enMenuOptions)safeInput::getInt("\nChoose what do you want to do [1 ~ 9] ? : "));
 }
 
 enTransactions readUserTransaction(void)
