@@ -6,7 +6,7 @@
 #include <limits>
 #include "safeInput.hpp"
 
-enum enMenuOptions      { LIST=1, ADD, DELETE, UPDATE, FIND, TRANSACTION, USERS, EXIT };
+enum enMenuOptions      { LIST=1, ADD, DELETE, UPDATE, FIND, TRANSACTION, USERS, LOGOUT, EXIT };
 enum enUserManagement   { LISTU=1, ADDU, DELETEU, UPDATEU, FINDU, MAINMENU };
 enum enTransactions     { DEPOSITE=1, WITHDRAW, BALANCES, BACKMENU };
 
@@ -58,6 +58,7 @@ struct stBank
     stListFile                      ListFile;
     stListFile                      UsersFile;
     stOperation                     Operation;
+    stUser                          CurrentUser;
 };
 
 
@@ -110,8 +111,10 @@ std::string readUserName(void)
     return (safeInput::getString("Please enter a username : "));
 }
 
-
-
+std::string readUserPassword(void)
+{
+    return (safeInput::getString("Please enter a password : "));
+}
 
 stBankRecord readBankRecord(void)
 {
@@ -516,9 +519,9 @@ bool clientExistInList(const stListFile &fileList, const std::string &AccountNum
 
 bool userExistInList(const stListFile &fileList, const std::string &UserNameToFind)
 {
-    std::vector <stBankRecord>  vRecords = LoadClientDataFromFileToVector(fileList);
+    std::vector <stUser>  vUsers = LoadUserDataFromFileToVector(fileList);
 
-    for (std::vector <stBankRecord>::iterator i = vRecords.begin(); i != vRecords.end(); i++)
+    for (std::vector <stUser>::iterator i = vUsers.begin(); i != vUsers.end(); i++)
     {
         if ((*i).Name == UserNameToFind)
             return (true);
@@ -575,8 +578,8 @@ void updateClient(const stListFile &fileList, const std::string &toUpdate, short
         std::cout << "Account " << toUpdate << " does not exist!\n";
     else
     {
-        vNewRecords = LoadDataFromFileToVector(fileList, toUpdate, newBalance);
-        saveDataFromVectorToFile(vNewRecords, fileList);
+        vNewRecords = LoadClientDataFromFileToVector(fileList, toUpdate, newBalance);
+        saveClientDataFromVectorToFile(vNewRecords, fileList);
         std::cout << "Client " << toUpdate << " Updated Successfuly!\n\n";
     }
 }
@@ -691,19 +694,34 @@ void withdrawClient(const std::string &ClientID, stBank &Menu)
     }
 }
 
-stBank initBank(const std::string &ListFileName, const std::string &ListDelim, const std::string &UsersFileName, const std::string &UsersDelim)
+
+
+
+
+
+
+stUser login(const stBank &Bank)
 {
-    stBank Menu;
+    std::string username;
+    std::string password;
+    stUser      loginUser;
 
-    Menu.ListFile.Name      = ListFileName;
-    Menu.ListFile.Delim     = ListDelim;
-    Menu.UsersFile.Name     = UsersFileName;
-    Menu.UsersFile.Delim    = UsersDelim;
-    Menu.vListVector        = LoadClientDataFromFileToVector(Menu.ListFile);
-    Menu.vUsersVector       = LoadUserDataFromFileToVector(Menu.UsersFile);
+    username     = readUserName();
+    password     = readUserPassword();
+    loginUser    = getUserInList(Bank.UsersFile, username);
 
-    return (Menu);
+    if (loginUser.Name == username && loginUser.Password == password)
+        return (loginUser);
+    else
+    {
+        std::cout << "\nInvalid username/Password! Please try again... \n\n";
+        return (login(Bank));
+    } 
 }
+
+
+
+
 
 void printHeader(std::vector <stBankRecord> vClients)
 {
@@ -798,6 +816,11 @@ void showMenuOf(enMenuOptions Option)
             std::cout << "|\t    Find Client Screen          |\n";
             break;
         }
+        case (LOGOUT) :
+        {
+            std::cout << "|\t        LOGIN                 |\n";
+            break;     
+        }
         case (EXIT) :
         {
             std::cout << "|\t    Program ENDS :)           |\n";
@@ -840,7 +863,9 @@ void showMenu(void)
     std::cout << "\t[4] : Update Client Info\n";
     std::cout << "\t[5] : Find Client\n";
     std::cout << "\t[6] : Transactions\n";
-    std::cout << "\t[7] : Exit\n";
+    std::cout << "\t[7] : Manage Users\n";
+    std::cout << "\t[8] : Logout\n";
+    std::cout << "\t[9] : Exit\n";
     std::cout << "---------------------------------------\n";
     std::cout << "---------------------------------------\n";
 }
@@ -991,12 +1016,18 @@ void executeUserOperation(stBank &Menu)
         {
             while (1)
             {
-                showTransactionMenu();
+                showUserManagementMenu();
                 Menu.Operation.UserManagement = readUserManagementOperation();
                 if (Menu.Operation.UserManagement == MAINMENU)
                     break;
                 executeUserManagementOperation(Menu);
             }
+        }
+        case (LOGOUT) :
+        {
+            showMenuOf(LOGOUT);
+            Menu.CurrentUser = login(Menu);
+            break;
         }
         case (EXIT) :
             break;
@@ -1004,6 +1035,23 @@ void executeUserOperation(stBank &Menu)
 
     if (Menu.Operation.Basic == ADD || Menu.Operation.Basic == DELETE || Menu.Operation.Basic == UPDATE)
         Menu.vListVector = LoadClientDataFromFileToVector(Menu.ListFile);
+}
+
+stBank initBank(const std::string &ListFileName, const std::string &ListDelim, const std::string &UsersFileName, const std::string &UsersDelim)
+{
+    stBank Menu;
+
+    showMenuOf(LOGOUT);
+
+    Menu.ListFile.Name      = ListFileName;
+    Menu.ListFile.Delim     = ListDelim;
+    Menu.UsersFile.Name     = UsersFileName;
+    Menu.UsersFile.Delim    = UsersDelim;
+    Menu.vListVector        = LoadClientDataFromFileToVector(Menu.ListFile);
+    Menu.vUsersVector       = LoadUserDataFromFileToVector(Menu.UsersFile);
+    Menu.CurrentUser        = login(Menu);
+
+    return (Menu);
 }
 
 int main(void)
